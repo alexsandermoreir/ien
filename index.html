@@ -1,0 +1,1856 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Pagar no Japão">
+<meta name="format-detection" content="telephone=no">
+<meta name="theme-color" content="#EDF0F3" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0F161C" media="(prefers-color-scheme: dark)">
+<title>Pagar no Japão</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2314202B'/%3E%3Ccircle cx='32' cy='32' r='20' fill='none' stroke='%23FFC629' stroke-width='7'/%3E%3Ctext x='32' y='40' font-size='22' font-weight='700' text-anchor='middle' fill='%23fff' font-family='sans-serif'%3E%C2%A5%3C/text%3E%3C/svg%3E">
+<style>
+:root{
+  --bg:#EDF0F3; --surface:#FFFFFF; --surface-2:#F3F5F7; --sheet-bg:#F4F6F8; --seg-bg:#E1E6EB; --seg-on:#FFFFFF;
+  --ink:#14202B; --ink-2:#465462; --ink-3:#66737F; --line:#DCE2E8; --line-strong:#C3CCD5;
+  --yellow:#FFC629; --yellow-ink:#14202B;
+  --green-ink:#126B3D; --green-bg:#E2F3E9;
+  --warn-ink:#6A4800; --warn-bg:#FFF3D1;
+  --danger:#C42B2B; --danger-bg:#FDE9E9;
+  --wise:#0E7C66; --nu:#820AD1; --nu-fill:#820AD1; --bar:#A3AEB9; --link:#1F5FD1; --focus:#2463EB;
+  --r-sheet:22px; --r-card:16px; --r-ctl:12px;
+  --font:-apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", system-ui, sans-serif;
+  --font-num:ui-rounded, "SF Pro Rounded", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  color-scheme:light dark;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#0F161C; --surface:#18222B; --surface-2:#202C37; --sheet-bg:#121B23; --seg-bg:#222D38; --seg-on:#45566A;
+    --ink:#EDF2F6; --ink-2:#B7C2CC; --ink-3:#93A0AC; --line:#2A3743; --line-strong:#3B4A58;
+    --green-ink:#6FD69D; --green-bg:#173528;
+    --warn-ink:#F2D58C; --warn-bg:#352C14;
+    --danger:#FF7A7A; --danger-bg:#3A1D1D;
+    --wise:#33C3A3; --nu:#B77BF2; --nu-fill:#7A1FC4; --bar:#5E6D7B; --link:#82B5FF; --focus:#82B5FF;
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);font-size:16px;line-height:1.42;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent}
+button,input,textarea,select{font:inherit;color:inherit}
+button{cursor:pointer}
+a{color:var(--link)}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.num{font-family:var(--font-num);font-variant-numeric:tabular-nums}
+.vh{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0;padding:0;margin:-1px}
+[hidden]{display:none!important}
+
+.app{max-width:760px;margin:0 auto;padding:calc(env(safe-area-inset-top) + 14px) 16px calc(156px + env(safe-area-inset-bottom))}
+.title{font-family:var(--font-num);font-size:34px;line-height:1.1;font-weight:700;letter-spacing:-.01em;margin:10px 0 4px}
+.lede{color:var(--ink-2);margin:0 0 16px;max-width:40ch}
+.banner{background:var(--warn-bg);color:var(--warn-ink);border-radius:12px;padding:10px 12px;font-size:14px;margin:0 0 12px}
+
+/* resumo */
+.summary{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-card);padding:14px 16px 12px;display:grid;grid-template-columns:1fr 1fr;gap:6px 14px}
+.sum-col h2{font-size:14px;font-weight:600;color:var(--ink-2);margin:0 0 2px}
+.sum-brl{display:block;font-family:var(--font-num);font-size:25px;font-weight:700;line-height:1.15;letter-spacing:-.01em}
+.sum-yen{display:block;font-size:14px;color:var(--ink-2)}
+.sum-count{display:block;font-size:12.5px;color:var(--ink-3)}
+.sum-col + .sum-col{border-left:1px solid var(--line);padding-left:14px}
+.sum-note{grid-column:1/-1;font-size:12.5px;color:var(--ink-3);margin:6px 0 0}
+
+/* controles segmentados */
+.seg{display:flex;background:var(--seg-bg);border-radius:12px;padding:2px;gap:2px;margin:0;border:0;min-width:0}
+.seg label{flex:1;position:relative;display:block;min-width:0}
+.seg input{position:absolute;opacity:0;inset:0;margin:0;width:100%;height:100%;cursor:pointer}
+.seg span{display:flex;align-items:center;justify-content:center;min-height:40px;border-radius:10px;font-size:14.5px;font-weight:500;color:var(--ink-2);text-align:center;padding:4px 8px;line-height:1.2;pointer-events:none}
+.seg input:checked + span{background:var(--seg-on);color:var(--ink);font-weight:600;box-shadow:0 1px 3px rgba(0,0,0,.14)}
+.seg input:focus-visible + span{outline:2px solid var(--focus);outline-offset:-2px}
+.mode-box{margin:16px 0 0}
+.home-mode{margin-top:28px;padding-top:18px;border-top:1px solid var(--line)}
+.mode-top{display:flex;align-items:center;gap:4px;margin:0 2px 8px;font-size:14px;font-weight:600;color:var(--ink-2)}
+.mode-expl{font-size:13.5px;color:var(--ink-2);margin:8px 2px 0}
+.filters{margin:14px 0 0}
+.seg-filter span{font-size:14px;padding:4px 6px}
+
+/* cards */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(158px,1fr));gap:12px;margin-top:12px}
+.pcard{display:flex;flex-direction:column;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-card);padding:0;overflow:hidden;width:100%;transition:transform .12s ease}
+.pcard:active{transform:scale(.98)}
+.pc-photo{display:block;position:relative;aspect-ratio:4/3;background:var(--surface-2);overflow:hidden}
+.pc-photo img{width:100%;height:100%;object-fit:cover;display:block}
+.ph-empty{position:absolute;inset:0;display:grid;place-items:center;color:var(--ink-3)}
+.ph-empty svg{width:34px;height:34px;opacity:.7}
+.pc-flag{position:absolute;left:8px;top:8px;display:inline-flex;align-items:center;gap:4px;background:var(--ink);color:var(--bg);font-size:12px;font-weight:600;padding:3px 8px 3px 6px;border-radius:999px}
+.pc-flag svg{width:13px;height:13px}
+.pc-body{display:flex;flex-direction:column;gap:1px;padding:10px 12px 12px;flex:1}
+.pc-title{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:15px;font-weight:600;line-height:1.25}
+.pc-yen{display:block;font-size:13px;color:var(--ink-2);margin-top:2px}
+.pc-brl{display:block;font-family:var(--font-num);font-size:22px;font-weight:700;line-height:1.15;margin-top:6px;letter-spacing:-.01em}
+.pc-cap{display:block;font-size:12px;color:var(--ink-3)}
+.badge{display:inline-flex;align-items:center;gap:6px;margin-top:9px;padding:3px 9px 3px 3px;border-radius:999px;background:var(--green-bg);color:var(--green-ink);font-size:12.5px;font-weight:600;line-height:1.2;align-self:flex-start}
+.empty{grid-column:1/-1;text-align:center;padding:34px 18px 10px;color:var(--ink-2)}
+.empty .mark{width:64px;height:64px;margin:0 auto 12px}
+.empty h2{font-size:19px;color:var(--ink);margin:0 0 6px;font-family:var(--font-num)}
+.empty p{margin:0 auto 16px;max-width:30ch}
+
+/* letras das formas de pagar (estilo placa de metrô) */
+.rd{--c:var(--wise);flex:none;display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--surface);border:3.5px solid var(--c);font-family:var(--font-num);font-weight:800;font-size:12.5px;color:var(--ink);line-height:1}
+.rd.nuconta{--c:var(--nu)}
+.rd.card{background:var(--nu-fill);border-color:var(--nu-fill);color:#fff}
+.rd.sm{width:21px;height:21px;border-width:3px;font-size:10.5px}
+.rd.lg{width:38px;height:38px;border-width:5px;font-size:16px}
+
+/* barra de abas e botão principal */
+.tabbar{position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--surface);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}
+@supports ((-webkit-backdrop-filter:blur(1px)) or (backdrop-filter:blur(1px))){
+  .tabbar{background:color-mix(in srgb,var(--surface) 84%,transparent);-webkit-backdrop-filter:saturate(1.6) blur(18px);backdrop-filter:saturate(1.6) blur(18px)}
+}
+.tabbar-inner{display:flex;max-width:760px;margin:0 auto}
+.tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:1px;padding:7px 4px 5px;background:none;border:0;font-size:11px;font-weight:600;color:var(--ink-3);min-height:52px}
+.tab svg{width:25px;height:25px}
+.tab[aria-current="page"]{color:var(--ink)}
+.tab[aria-current="page"] .tab-dot{background:var(--yellow)}
+.tab-ico{position:relative;display:grid;place-items:center;width:44px;height:28px;border-radius:14px}
+.tab[aria-current="page"] .tab-ico{background:var(--yellow);color:var(--yellow-ink)}
+.fab{position:fixed;z-index:19;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom) + 68px);display:inline-flex;align-items:center;gap:8px;min-height:54px;padding:0 24px 0 18px;border-radius:999px;background:var(--yellow);color:var(--yellow-ink);border:0;font-weight:700;font-size:17px;box-shadow:0 8px 22px rgba(20,32,43,.25),0 1px 0 rgba(0,0,0,.06);white-space:nowrap}
+.fab svg{width:22px;height:22px}
+.fab:active{transform:translateX(-50%) scale(.97)}
+
+/* botões */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:46px;padding:0 18px;border-radius:var(--r-ctl);border:1px solid var(--line-strong);background:var(--surface);font-weight:600;font-size:16px;text-decoration:none;color:var(--ink);line-height:1.15;text-align:center}
+.btn svg{width:18px;height:18px;flex:none}
+.btn.primary{background:var(--yellow);border-color:var(--yellow);color:var(--yellow-ink)}
+.btn.danger{background:var(--danger);border-color:var(--danger);color:#fff}
+.btn.danger-text{color:var(--danger)}
+.btn.block{width:100%}
+.btn.small{min-height:40px;padding:0 12px;font-size:14.5px;border-radius:10px}
+.btn:active{opacity:.85}
+.linkbtn{background:none;border:0;color:var(--link);font-size:16px;font-weight:600;min-height:44px;padding:0 6px}
+.q{position:relative;display:inline-grid;place-items:center;width:21px;height:21px;border-radius:50%;border:1.5px solid var(--ink-3);background:transparent;color:var(--ink-2);font-size:12.5px;font-weight:700;padding:0;margin:0 0 0 5px;vertical-align:-3px;line-height:1;flex:none}
+.q::after{content:"";position:absolute;inset:-12px}
+.q[aria-expanded="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+
+/* dica de termo */
+.tip{position:fixed;z-index:90;max-width:min(330px,calc(100vw - 32px));background:var(--ink);color:var(--bg);font-size:14.5px;line-height:1.4;padding:10px 13px;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+.tip b{display:block;margin-bottom:2px}
+.toast{position:fixed;z-index:95;left:50%;bottom:calc(env(safe-area-inset-bottom) + 132px);transform:translate(-50%,20px);opacity:0;pointer-events:none;background:var(--ink);color:var(--bg);font-size:15px;font-weight:600;padding:11px 16px;border-radius:999px;transition:opacity .2s,transform .2s;white-space:nowrap;max-width:calc(100vw - 32px);overflow:hidden;text-overflow:ellipsis}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+
+/* painel que sobe */
+.sheet-root{position:fixed;inset:0;z-index:50}
+.scrim{position:absolute;inset:0;background:rgba(8,14,20,.45);opacity:0;transition:opacity .3s}
+.sheet{position:absolute;left:0;right:0;bottom:0;margin:0 auto;max-width:760px;max-height:calc(100vh - 36px);max-height:calc(100dvh - env(safe-area-inset-top) - 12px);display:flex;flex-direction:column;background:var(--sheet-bg);border-radius:var(--r-sheet) var(--r-sheet) 0 0;transform:translateY(100%);transition:transform .36s cubic-bezier(.2,.85,.25,1);box-shadow:0 -10px 30px rgba(0,0,0,.18)}
+.sheet-root.open .scrim{opacity:1}
+.sheet-root.open .sheet{transform:translateY(0)}
+.sheet.dragging{transition:none}
+.grab{display:flex;justify-content:center;padding:8px 0 0;touch-action:none}
+.grab span{width:40px;height:5px;border-radius:3px;background:var(--line-strong)}
+.sheet-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:2px 10px 4px 16px;touch-action:none;min-height:48px}
+.sheet-head h2{font-size:17px;font-weight:600;margin:0;outline:none}
+.sheet-body{overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:4px 16px calc(28px + env(safe-area-inset-bottom))}
+
+/* detalhes */
+.d-head{display:flex;gap:14px;align-items:center}
+.d-thumb{flex:none;width:72px;height:72px;border-radius:14px;overflow:hidden;padding:0;border:1px solid var(--line);background:var(--surface-2)}
+.d-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.d-headtxt{min-width:0}
+.d-photo{border-radius:16px;overflow:hidden;background:var(--surface-2);margin:12px 0 0}
+.d-photo img{width:100%;height:auto;max-height:60vh;object-fit:contain;display:block}
+.d-title{font-family:var(--font-num);font-size:24px;line-height:1.15;font-weight:700;margin:0;letter-spacing:-.01em;overflow-wrap:anywhere}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 0}
+.chip{font-size:13px;padding:3px 10px;border-radius:999px;background:var(--surface);color:var(--ink-2);border:1px solid var(--line)}
+.d-price{margin:4px 0 0;font-size:14.5px;color:var(--ink-2);line-height:1.3}
+.d-price strong{font-family:var(--font-num);font-size:18px;color:var(--ink)}
+.d-tf{white-space:nowrap}
+.answer{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:16px;margin:14px 0 8px}
+.answer-k{font-size:14px;font-weight:600;color:var(--green-ink);margin:0 0 8px}
+.answer-m{display:flex;align-items:center;gap:10px;font-size:17px;font-weight:600;line-height:1.25}
+.answer-v{font-family:var(--font-num);font-size:40px;font-weight:800;letter-spacing:-.015em;line-height:1.05;margin:14px 0 2px}
+.answer-c{font-size:13.5px;color:var(--ink-3)}
+.story{font-size:16.5px;line-height:1.5;margin:14px 0 0}
+.alert{display:flex;gap:10px;align-items:flex-start;background:var(--warn-bg);color:var(--warn-ink);border-radius:12px;padding:10px 12px;font-size:15px;line-height:1.4;margin:8px 0 0}
+.alert svg{width:19px;height:19px;flex:none;margin-top:1px}
+.sec-h{font-family:var(--font-num);font-size:20px;font-weight:700;margin:26px 2px 10px}
+.rank{list-style:none;margin:0;padding:0;background:var(--surface);border:1px solid var(--line);border-radius:16px}
+.rank li{padding:12px 14px;border-top:1px solid var(--line)}
+.rank li:first-child{border-top:0}
+.rk-top{display:flex;align-items:center;gap:10px}
+.rk-name{flex:1;min-width:0;font-size:15px;font-weight:500;line-height:1.25}
+.rk-val{font-family:var(--font-num);font-weight:700;font-size:15.5px;white-space:nowrap}
+.rk-sub{display:flex;align-items:center;gap:10px;margin:7px 0 0 36px}
+.bar{flex:1;height:8px;border-radius:4px;background:var(--surface-2);overflow:hidden}
+.bar i{display:block;height:100%;min-width:3px;background:var(--bar);border-radius:4px}
+.rk-extra{font-size:13px;color:var(--ink-2);white-space:nowrap}
+.rk-best{font-size:13px;color:var(--green-ink);font-weight:600}
+.rk-tags{display:flex;flex-wrap:wrap;gap:6px;margin:7px 0 0 36px}
+.tag{font-size:12.5px;padding:2px 8px;border-radius:6px;background:var(--warn-bg);color:var(--warn-ink);line-height:1.35}
+.how-base{font-size:15px;color:var(--ink-2);margin:0 2px 10px}
+.how details{background:var(--surface);border:1px solid var(--line);border-radius:14px;margin:8px 0}
+.how summary{list-style:none;display:flex;align-items:center;gap:10px;padding:10px 14px;min-height:52px;cursor:pointer}
+.how summary::-webkit-details-marker{display:none}
+.how summary .rk-name{font-size:15px}
+.how .chev{width:18px;height:18px;color:var(--ink-3);transition:transform .2s;flex:none}
+.how details[open] .chev{transform:rotate(90deg)}
+.how ol{margin:0;padding:0 16px 14px 46px;font-size:15px;line-height:1.45}
+.how li{margin:5px 0;padding-left:2px}
+.notes{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px;white-space:pre-wrap;font-size:15.5px}
+.d-actions{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:26px 0 0}
+.confirm{background:var(--danger-bg);border-radius:14px;padding:14px;margin:12px 0 0}
+.confirm p{margin:0 0 12px;font-size:15.5px}
+.confirm .row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+
+/* formulário */
+.form-row{margin:16px 0 0;border:0;padding:0;min-width:0}
+.form-row > label,.form-row > legend,.lbl{display:flex;align-items:center;font-size:15px;font-weight:600;margin:0 0 7px;padding:0}
+.opt{font-weight:400;color:var(--ink-3);margin-left:5px}
+.inp{width:100%;min-height:48px;padding:11px 13px;border-radius:var(--r-ctl);border:1px solid var(--line-strong);background:var(--surface);font-size:17px;-webkit-appearance:none;appearance:none}
+.inp:focus{outline:2px solid var(--focus);outline-offset:-1px;border-color:transparent}
+.inp[aria-invalid="true"]{border-color:var(--danger)}
+textarea.inp{min-height:92px;resize:vertical;line-height:1.4}
+input[type="date"].inp{display:block;text-align:left}
+input[type="date"].inp::-webkit-date-and-time-value{text-align:left}
+.hint{font-size:13.5px;color:var(--ink-2);margin:7px 2px 0}
+.err{font-size:13.5px;color:var(--danger);margin:7px 2px 0;font-weight:500}
+.with-prefix{position:relative}
+.with-prefix .pre{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--ink-2);font-size:17px;pointer-events:none}
+.with-prefix .inp{padding-left:32px}
+.photo-pick{display:flex;gap:14px;align-items:center;margin:4px 0 0}
+.photo-prev{width:104px;height:104px;border-radius:16px;overflow:hidden;background:var(--surface);border:1px dashed var(--line-strong);display:grid;place-items:center;flex:none;color:var(--ink-3)}
+.photo-prev img{width:100%;height:100%;object-fit:cover;display:block}
+.photo-prev svg{width:30px;height:30px}
+.photo-btns{display:flex;flex-direction:column;gap:8px;align-items:flex-start}
+.form-actions{display:grid;gap:10px;margin:26px 0 0}
+
+/* tela Taxas */
+.group{margin:26px 0 0}
+.group-h{display:flex;align-items:center;gap:10px;margin:0 4px 4px}
+.group-h h2{font-family:var(--font-num);font-size:21px;font-weight:700;margin:0}
+.group-rds{display:flex;gap:4px;margin-left:auto}
+.group-note{font-size:14px;color:var(--ink-2);margin:0 4px 10px}
+.rows{background:var(--surface);border:1px solid var(--line);border-radius:16px}
+.row{padding:14px;border-top:1px solid var(--line)}
+.row:first-child{border-top:0}
+.row-top{display:flex;align-items:center;gap:6px}
+.row-top label,.row-top .lbl2{font-weight:600;font-size:15.5px;line-height:1.3}
+.used{display:inline-block;font-size:12px;color:var(--ink-2);background:var(--surface-2);border-radius:6px;padding:1px 7px;margin-top:6px}
+.field{display:flex;align-items:center;gap:10px;margin-top:8px}
+.field .inp{flex:1;min-width:0;font-family:var(--font-num);font-variant-numeric:tabular-nums}
+.unit{font-size:14px;color:var(--ink-2);white-space:nowrap;min-width:76px}
+.row-help{font-size:14px;color:var(--ink-2);margin:8px 0 0}
+.row-meta{display:flex;align-items:center;justify-content:space-between;gap:8px 12px;margin-top:10px;flex-wrap:wrap}
+.upd{font-size:13px;color:var(--ink-3)}
+.upd.stale{color:var(--warn-ink);font-weight:600}
+.flag{display:inline-block;font-size:12.5px;font-weight:600;color:var(--warn-ink);background:var(--warn-bg);border-radius:6px;padding:2px 8px;margin-top:8px}
+.note-box{background:var(--surface-2);border-radius:12px;padding:11px 13px;font-size:14.5px;margin:10px 0 0;line-height:1.4}
+.note-box strong{font-weight:600}
+.helper{margin-top:10px}
+.helper summary{font-size:14.5px;font-weight:600;color:var(--link);cursor:pointer;min-height:40px;display:flex;align-items:center;list-style:none}
+.helper summary::-webkit-details-marker{display:none}
+.helper-body{display:grid;gap:8px;padding:4px 0 2px}
+.helper-out{font-size:14.5px;color:var(--ink)}
+.mini{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.mini label{display:block;font-size:13px;color:var(--ink-2);margin-bottom:4px}
+.restore{margin:30px 0 0}
+
+/* backup */
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px;margin:16px 0 0}
+.panel h2{font-family:var(--font-num);font-size:19px;margin:0 0 6px}
+.panel p{margin:0 0 12px;color:var(--ink-2);font-size:15px}
+.panel .btn + .btn{margin-top:10px}
+.check-row{display:flex;align-items:center;gap:10px;min-height:44px;font-size:15.5px}
+.check-row input{width:22px;height:22px;accent-color:var(--ink)}
+
+@media (min-width:620px){
+  .grid{grid-template-columns:repeat(auto-fill,minmax(190px,1fr))}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{transition-duration:.01ms!important;animation-duration:.01ms!important}
+}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+  <p class="banner" id="storage-banner" hidden>Este navegador não está deixando o app salvar dados. Suas compras somem ao fechar a página. Saia do modo privado ou use o backup.</p>
+
+  <section class="view" id="view-compras" aria-labelledby="h-compras">
+    <h1 class="title" id="h-compras">Compras</h1>
+    <p class="lede">A forma mais barata de pagar cada compra no Japão.</p>
+    <div id="summary"></div>
+    <div class="filters" id="filters"></div>
+    <div class="grid" id="grid" aria-live="polite"></div>
+    <div class="mode-box home-mode" id="mode-home"></div>
+  </section>
+
+  <section class="view" id="view-taxas" aria-labelledby="h-taxas" hidden>
+    <h1 class="title" id="h-taxas">Taxas</h1>
+    <p class="lede">Mude qualquer valor e as contas se refazem na hora. Os valores padrão são de 15/10/2026.</p>
+    <div class="mode-box" id="mode-taxas"></div>
+    <div id="taxas-body"></div>
+  </section>
+
+  <section class="view" id="view-backup" aria-labelledby="h-backup" hidden>
+    <h1 class="title" id="h-backup">Backup</h1>
+    <p class="lede">Guarde uma cópia das compras, fotos e taxas. Serve para trocar de celular ou se o navegador apagar os dados.</p>
+    <div id="backup-body"></div>
+  </section>
+</div>
+
+<button type="button" class="fab" id="fab" data-action="new"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Nova compra</button>
+
+<nav class="tabbar" aria-label="Seções">
+  <div class="tabbar-inner">
+    <button type="button" class="tab" data-action="tab" data-view="compras"><span class="tab-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 8h14l-1.2 11.2a2 2 0 0 1-2 1.8H8.2a2 2 0 0 1-2-1.8L5 8z"/><path d="M9 10V6.5a3 3 0 0 1 6 0V10"/></svg></span>Compras</button>
+    <button type="button" class="tab" data-action="tab" data-view="taxas"><span class="tab-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2.2"/><circle cx="10" cy="17" r="2.2"/></svg></span>Taxas</button>
+    <button type="button" class="tab" data-action="tab" data-view="backup"><span class="tab-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="4" width="17" height="5" rx="1.5"/><path d="M5 9v9.5A1.5 1.5 0 0 0 6.5 20h11a1.5 1.5 0 0 0 1.5-1.5V9"/><path d="M10 13h4"/></svg></span>Backup</button>
+  </div>
+</nav>
+
+<div class="sheet-root" id="sheet-root" hidden>
+  <div class="scrim" data-action="close-sheet"></div>
+  <section class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-title">
+    <div class="grab" aria-hidden="true"><span></span></div>
+    <header class="sheet-head">
+      <h2 id="sheet-title" tabindex="-1"></h2>
+      <button type="button" class="linkbtn" data-action="close-sheet">Fechar</button>
+    </header>
+    <div class="sheet-body" id="sheet-body"></div>
+  </section>
+</div>
+
+<div class="tip" id="tip" role="status" hidden></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<input type="file" id="import-input" class="vh" accept="application/json,.json" tabindex="-1" aria-hidden="true">
+
+<script>
+'use strict';
+(function(){
+
+/* ===================== Dados fixos ===================== */
+const APP_ID = 'pagar-no-japao';
+const DEFAULTS_DATE = '2026-10-15';
+
+const LINKS = {
+  nubankCard: 'https://nubank.com.br/dados-abertos/taxas-conversao',
+  nubankUv: 'https://nubank.com.br/ultravioleta/cartao',
+  nubankGlobal: 'https://nubank.com.br/ultravioleta/conta-global',
+  mastercard: 'https://www.mastercard.com/br/pt/personal/get-support/currency-exchange-rate-converter.html',
+  wiseBrlUsd: 'https://wise.com/br/currency-converter/brl-to-usd-rate',
+  wiseBrlJpy: 'https://wise.com/br/currency-converter/brl-to-jpy-rate',
+  wiseUsdJpy: 'https://wise.com/br/currency-converter/usd-to-jpy-rate',
+  wisePricing: 'https://wise.com/br/pricing/',
+  wiseInterest: 'https://wise.com/br/interest/',
+  bcbCotacoes: 'https://www.bcb.gov.br/estabilidadefinanceira/historicocotacoes',
+  bcbSelic: 'https://www.bcb.gov.br/controleinflacao/taxaselic'
+};
+const LINK_NAMES = {
+  nubankCard: 'Nubank: taxas de conversão do cartão',
+  nubankUv: 'Nubank: cartão Ultravioleta',
+  nubankGlobal: 'Nubank: Conta Global',
+  mastercard: 'Mastercard: conversor de moedas',
+  wiseBrlUsd: 'Wise: conversor real para dólar',
+  wiseBrlJpy: 'Wise: conversor real para iene',
+  wiseUsdJpy: 'Wise: conversor dólar para iene',
+  wisePricing: 'Wise: tarifas',
+  wiseInterest: 'Wise: rendimento',
+  bcbCotacoes: 'Banco Central: cotações e PTAX',
+  bcbSelic: 'Banco Central: taxa Selic'
+};
+
+const TERMS = {
+  iof: ['IOF', 'Imposto cobrado pelo governo em operações com moeda estrangeira.'],
+  spread: ['Spread', 'Diferença entre o câmbio que o banco cobra e o câmbio de mercado; é o lucro dele.'],
+  cdi: ['CDI', 'Taxa de referência do rendimento de aplicações em reais.'],
+  estorno: ['Estorno do IOF', 'Devolução do imposto pelo banco depois da compra.'],
+  cashback: ['Cashback', 'Parte do valor da compra que volta para você.'],
+  mercado: ['Câmbio de mercado', 'Preço da moeda entre bancos, sem margem de ninguém.'],
+  custoReal: ['Custo real', 'Quanto a compra pesa no bolso, descontando o que o dinheiro rende até sair da conta.'],
+  taxfree: ['Tax-free', 'O Japão devolve a turistas o imposto de 10% que vem no preço. Vale em lojas com tax-free, a partir de ¥ 5.000 (sem imposto) na mesma loja e no mesmo dia. Desde 1º/11/2026 você paga o preço cheio e recebe o imposto de volta depois que a alfândega confere os produtos no aeroporto.'],
+  modos: ['Como comparar', 'Comparação justa: todas as formas usam o mesmo câmbio de mercado e muda só o custo de cada uma. Cotações dos apps: usa a cotação que você viu em cada app e digitou na tela Taxas.'],
+  rende: ['Rende+', 'Recurso da Wise que faz o saldo em dólar render enquanto fica parado.']
+};
+
+const ICON = {
+  bag: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 8h14l-1.2 11.2a2 2 0 0 1-2 1.8H8.2a2 2 0 0 1-2-1.8L5 8z"/><path d="M9 10V6.5a3 3 0 0 1 6 0V10"/></svg>',
+  camera: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8.5A1.5 1.5 0 0 1 5.5 7h2l1.5-2h6l1.5 2h2A1.5 1.5 0 0 1 20 8.5v9A1.5 1.5 0 0 1 18.5 19h-13A1.5 1.5 0 0 1 4 17.5z"/><circle cx="12" cy="13" r="3.4"/></svg>',
+  check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>',
+  ext: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9"/><path d="M18 14v4.5a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 4 18.5v-11A1.5 1.5 0 0 1 5.5 6H10"/></svg>',
+  info: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/></svg>',
+  chev: '<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>',
+  edit: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg>',
+  copy: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5.5A1.5 1.5 0 0 0 14.5 4h-9A1.5 1.5 0 0 0 4 5.5v9A1.5 1.5 0 0 0 5.5 16H8"/></svg>',
+  trash: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4h6v3"/></svg>',
+  down: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>',
+  up: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20V9M7 14l5-5 5 5M5 4h14"/></svg>',
+  mark: '<svg class="mark" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="26" fill="none" stroke="#FFC629" stroke-width="9"/><text x="32" y="41" font-size="25" font-weight="700" text-anchor="middle" fill="currentColor" font-family="-apple-system, system-ui, sans-serif">¥</text></svg>'
+};
+
+const METHODS = [
+  { id:'A', bank:'wise',    name:'Wise: real → dólar → iene',               short:'Wise via dólar',       verb:()=>'Trocando reais por dólares na Wise e depois dólares por ienes' },
+  { id:'B', bank:'wise',    name:'Wise: real → iene direto',                short:'Wise iene direto',     verb:()=>'Trocando reais direto por ienes na Wise' },
+  { id:'C', bank:'wise',    name:'Wise: envio para outra pessoa em dólar',  short:'Wise envio em dólar',  verb:()=>'Enviando reais pela Wise para outra pessoa receber em dólar' },
+  { id:'D', bank:'wise',    name:'Wise: envio para outra pessoa em iene',   short:'Wise envio em iene',   verb:()=>'Enviando reais pela Wise para outra pessoa receber em iene' },
+  { id:'E', bank:'wise',    name:'Wise: dólar rendendo no Rende+',          short:'Wise + Rende+',        verb:()=>'Trocando reais por dólares na Wise e deixando o dólar no Rende+ até a compra' },
+  { id:'F', bank:'nuconta', name:'Nubank Conta Global: real → dólar',       short:'Conta Global dólar',   verb:()=>'Trocando reais por dólares na Nubank Conta Global' },
+  { id:'G', bank:'nuconta', name:'Nubank Conta Global: real → iene',        short:'Conta Global iene',    verb:()=>'Trocando reais por ienes na Nubank Conta Global' },
+  { id:'H', bank:'card',    name:'Cartão de crédito Nubank Ultravioleta',   short:'cartão de crédito',    verb:s=>'Pagando no ' + ((s.cardLabel||'').trim() || 'cartão de crédito') }
+];
+const METHOD = Object.fromEntries(METHODS.map(m => [m.id, m]));
+
+const GROUPS = [
+  { id:'mercado', title:'Câmbio de mercado', note:'Base da comparação justa para todas as formas.', methods:[] },
+  { id:'wise',    title:'Wise', note:'Formas A, B, C, D e E.', methods:['A','B','C','D','E'] },
+  { id:'nuconta', title:'Nubank Conta Global', note:'Formas F e G.', methods:['F','G'] },
+  { id:'cartao',  title:'Cartão Nubank Ultravioleta', note:'Forma H.', methods:['H'] },
+  { id:'rend',    title:'Rendimento do dinheiro parado', note:'Enquanto não sai da conta, o dinheiro em reais rende. Vale para todas as formas.', methods:[] },
+  { id:'datas',   title:'Datas', note:'Usadas para calcular quanto o dinheiro rende.', methods:[] }
+];
+
+/* kind: num | bool | text | date. used: fair | app (só usado em um modo) */
+const FIELDS = [
+  { g:'mercado', key:'mktUsdBrl', label:'Dólar', unit:'R$ por US$ 1', dec:4, def:5.08, term:'mercado', used:'fair', link:'bcbCotacoes',
+    help:'Use a cotação de venda do dólar (PTAX) no site do Banco Central, ou o dólar comercial do noticiário.' },
+  { g:'mercado', key:'mktJpyPerUsd', label:'Iene', unit:'¥ por US$ 1', dec:2, def:158, used:'fair', link:'wiseUsdJpy',
+    help:'Quantos ienes 1 dólar compra. No conversor da Wise, escolha dólar para iene.' },
+
+  { g:'wise', key:'wiseFeeBrlUsd', label:'Tarifa real → dólar', unit:'%', dec:3, def:0.66, link:'wisePricing', helpFee:true,
+    help:'Simule no app da Wise uma troca de reais para dólar e veja a linha da tarifa.' },
+  { g:'wise', key:'wiseIofOwn', label:'IOF para sua conta em dólar', unit:'%', dec:3, def:1.1, term:'iof', link:'wisePricing',
+    help:'Aparece na mesma simulação, na linha do IOF. Vale para a forma A e a E.' },
+  { g:'wise', key:'wiseFeeUsdJpy', label:'Tarifa dólar → iene', unit:'%', dec:3, def:0.31, link:'wisePricing',
+    help:'Simule no app a troca do saldo em dólar para iene.' },
+  { g:'wise', key:'wiseFeeBrlJpy', label:'Tarifa real → iene', unit:'%', dec:3, def:0.66, link:'wisePricing',
+    help:'Simule no app uma troca de reais direto para iene.' },
+  { g:'wise', key:'wiseIof', label:'IOF na troca para iene e nos envios', unit:'%', dec:3, def:3.5, term:'iof', link:'wisePricing',
+    help:'Aparece na simulação, na linha do IOF. Vale para as formas B, C e D.' },
+  { g:'wise', key:'wiseFeeSendUsd', label:'Tarifa de envio para outra pessoa em dólar', unit:'%', dec:3, def:0.67, link:'wisePricing',
+    help:'Simule um envio para alguém que recebe em dólar.' },
+  { g:'wise', key:'wiseFeeSendJpy', label:'Tarifa de envio para outra pessoa em iene', unit:'%', dec:3, def:0.71, link:'wisePricing',
+    help:'Simule um envio para alguém que recebe em iene.' },
+  { g:'wise', key:'wiseRendeUsd', label:'Rendimento do dólar no Rende+', unit:'% ao ano', dec:3, def:3.4, term:'rende', link:'wiseInterest',
+    help:'No app da Wise, abra o saldo em dólar e veja o rendimento ao ano.' },
+  { g:'wise', key:'wiseQUsdBrl', label:'Cotação do dólar na Wise', unit:'R$ por US$ 1', dec:4, def:5.08, used:'app', link:'wiseBrlUsd',
+    help:'No conversor da Wise, veja quanto custa 1 dólar em reais. É o valor sem tarifa.' },
+  { g:'wise', key:'wiseQBrlJpy', label:'Cotação do iene na Wise', unit:'R$ por ¥ 1', dec:6, def:0.032152, used:'app', link:'wiseBrlJpy',
+    help:'No conversor da Wise, veja quanto custa 1 iene em reais.' },
+  { g:'wise', key:'wiseQJpyPerUsd', label:'Ienes por dólar na Wise', unit:'¥ por US$ 1', dec:2, def:158, used:'app', link:'wiseUsdJpy',
+    help:'No conversor da Wise, veja quantos ienes 1 dólar compra.' },
+
+  { g:'nuconta', key:'nuSpread', label:'Spread', unit:'%', dec:3, def:0, term:'spread', used:'fair', link:'nubankGlobal',
+    help:'Veja as condições da Conta Global no site do Nubank.' },
+  { g:'nuconta', key:'nuIof', label:'IOF', unit:'%', dec:3, def:3.5, term:'iof', link:'nubankGlobal',
+    help:'Aparece na tela de conversão do app.' },
+  { g:'nuconta', key:'nuUsdJpyCost', label:'Custo para gastar dólar em iene', unit:'%', dec:3, def:0, link:'nubankGlobal', flagUninformed:true,
+    help:'Quanto o banco cobra quando você paga em iene usando o saldo em dólar. Se não souber, deixe 0%.' },
+  { g:'nuconta', key:'nuQUsdBrl', label:'Cotação do dólar no app, sem IOF', unit:'R$ por US$ 1', dec:4, def:5.08, used:'app', link:'nubankGlobal', iofHelper:true,
+    help:'No app, na troca de reais para dólar.' },
+  { g:'nuconta', key:'nuQBrlJpy', label:'Cotação do iene no app, sem IOF', unit:'R$ por ¥ 1', dec:6, def:0.032152, used:'app', link:'nubankGlobal', iofHelper:true,
+    help:'No app, na troca de reais para iene.' },
+
+  { g:'cartao', key:'cardLabel', kind:'text', label:'Como chamar o cartão nos textos', def:'cartão de crédito da Bela',
+    help:'Aparece na explicação de cada compra. Ex.: cartão de crédito da Bela.' },
+  { g:'cartao', key:'cardRate', label:'Taxa do cartão Nubank', unit:'R$ por US$ 1', dec:4, def:5.2459, used:'app', link:'nubankCard',
+    help:'Na página de dados abertos do Nubank, pegue o valor mais recente. Ele já inclui o spread do banco.' },
+  { g:'cartao', key:'cardSpread', label:'Spread do cartão', unit:'%', dec:3, def:3.5, term:'spread', used:'fair', link:'nubankUv', spreadHelper:true,
+    help:'O Nubank informa 3,5% no Ultravioleta.' },
+  { g:'cartao', key:'mcUsdPerJpy', label:'Taxa Mastercard do iene', unit:'US$ por ¥ 1', dec:7, def:0.0063291, used:'app', link:'mastercard',
+    help:'No simulador: moeda da compra JPY, moeda do cartão USD. Copie o número de “1 JPY = … USD”.', remind:'Use taxa bancária 0% no simulador.' },
+  { g:'cartao', key:'cardIof', label:'IOF', unit:'%', dec:3, def:3.5, term:'iof', link:'nubankUv',
+    help:'Vem na fatura, junto de cada compra internacional.' },
+  { g:'cartao', key:'cardIofRefund', kind:'bool', label:'O banco devolve o IOF?', def:true, term:'estorno', link:'nubankUv',
+    help:'No Ultravioleta, o Nubank informa IOF de volta na fatura em até 7 dias.' },
+  { g:'cartao', key:'cardCashback', label:'Cashback', unit:'%', dec:3, def:1.25, term:'cashback', link:'nubankUv',
+    help:'No Ultravioleta, o Nubank informa 1,25% nas compras no crédito.' },
+
+  { g:'rend', key:'cdi', label:'CDI', unit:'% ao ano', dec:3, def:13.65, term:'cdi', link:'bcbSelic',
+    help:'O CDI fica sempre perto da Selic, uns 0,10 ponto abaixo. Veja a Selic no site do Banco Central.' },
+  { g:'rend', key:'cdiPct', label:'Quanto do CDI seu dinheiro rende', unit:'% do CDI', dec:2, def:120,
+    help:'Veja no app do banco onde o dinheiro fica guardado até sair. Se não render nada, ponha 0.' },
+
+  { g:'datas', key:'dateConv', kind:'date', label:'Dia em que você troca o dinheiro', defDays:0,
+    help:'Para Wise e Conta Global. Até esse dia, o dinheiro fica rendendo em reais.' },
+  { g:'datas', key:'dateBuy', kind:'date', label:'Dia das compras', defDays:21,
+    help:'Usado no rendimento do dólar parado no Rende+ (forma E).' },
+  { g:'datas', key:'dateBill', kind:'date', label:'Vencimento da fatura do cartão', defDays:50,
+    help:'Até esse dia, o dinheiro do cartão fica rendendo em reais. Veja no app do Nubank.' }
+];
+const FIELD = Object.fromEntries(FIELDS.map(f => [f.key, f]));
+const RATE_KEYS = FIELDS.filter(f => !f.kind || f.kind === 'num' || f.kind === 'bool').map(f => f.key);
+
+/* ===================== Formatação ===================== */
+const nfCache = new Map();
+function NF(min, max, group){
+  const k = min + '|' + max + '|' + (group !== false);
+  if (!nfCache.has(k)) nfCache.set(k, new Intl.NumberFormat('pt-BR', { minimumFractionDigits:min, maximumFractionDigits:max, useGrouping: group !== false }));
+  return nfCache.get(k);
+}
+const NB = ' ';
+function fmtBRL(v){ return 'R$' + NB + NF(2,2).format(v); }
+function fmtBRL0(v){ return 'R$' + NB + NF(0,0).format(Math.round(v)); }
+function fmtJPY(v){ return '¥' + NB + NF(0,0).format(Math.round(v)); }
+function fmtUSD(v){ return 'US$' + NB + NF(2,2).format(v); }
+function fmtNum(v, max, min){ return NF(min || 0, max == null ? 2 : max).format(v); }
+function fmtPct(v, max){ return fmtNum(v, max == null ? 2 : max) + '%'; }
+function fmtRate(v, dec){ return NF(2, Math.max(2, dec)).format(v); }
+function fmtBRLr(v){ return 'R$' + NB + fmtRate(v, 4); }
+function fmtInput(v, dec){ return (v == null || !isFinite(v)) ? '' : NF(0, dec == null ? 6 : dec, false).format(v); }
+function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c])); }
+
+/* Aceita "0,66", "5.08", "1.234,56", "1,234.56" e espaços */
+function parseDecimal(raw){
+  if (raw == null) return NaN;
+  let s = String(raw).trim().replace(/[\s ]/g, '').replace(/^(R\$|US\$|¥)/, '').replace(/%$/, '');
+  if (!s) return NaN;
+  const hasC = s.indexOf(',') >= 0, hasD = s.indexOf('.') >= 0;
+  if (hasC && hasD){
+    if (s.lastIndexOf(',') > s.lastIndexOf('.')) s = s.replace(/\./g, '').replace(',', '.');
+    else s = s.replace(/,/g, '');
+  } else if (hasC){
+    if ((s.match(/,/g) || []).length > 1) return NaN;
+    s = s.replace(',', '.');
+  } else if (hasD && (s.match(/\./g) || []).length > 1){
+    s = s.replace(/\./g, '');
+  }
+  if (!/^-?(\d+\.?\d*|\.\d+)$/.test(s)) return NaN;
+  return Number(s);
+}
+function parseYen(raw){
+  const d = String(raw == null ? '' : raw).replace(/\D/g, '');
+  return d ? Number(d) : NaN;
+}
+
+/* ===================== Datas ===================== */
+function isoOf(d){ return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'); }
+function todayISO(){ return isoOf(new Date()); }
+function validISO(s){ return typeof s === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(s); }
+function addDays(iso, n){ const [y,m,d] = iso.split('-').map(Number); return isoOf(new Date(y, m-1, d+n)); }
+function daysBetween(a, b){ const p = s => { const [y,m,d] = s.split('-').map(Number); return Date.UTC(y, m-1, d); }; return Math.round((p(b) - p(a)) / 86400000); }
+function fmtDate(iso){ if (!validISO(iso)) return '—'; const [y,m,d] = iso.split('-'); return d + '/' + m + '/' + y; }
+
+/* ===================== Motor de cálculo ===================== */
+const IOF_REGRESSIVO = [96,93,90,86,83,80,76,73,70,66,63,60,56,53,50,46,43,40,36,33,30,26,23,20,16,13,10,6,3];
+function irAliquota(days){ return days <= 180 ? 22.5 : days <= 360 ? 20 : days <= 720 ? 17.5 : 15; }
+
+/* Rendimento líquido de R$ 1 guardado por "days" dias corridos */
+function rendimentoReais(days, s){
+  const annual = (Number(s.cdi) / 100) * (Number(s.cdiPct) / 100);
+  const irPct = irAliquota(Math.max(1, days || 0));
+  if (!(days > 0) || !(annual > 0)) return { days: Math.max(0, days || 0), annual, du:0, gross:0, iofPct:0, iof:0, irPct, ir:0, net:0, factor:1 };
+  const du = days * 252 / 365;
+  const gross = Math.pow(1 + annual, du / 252) - 1;
+  const iofPct = days < 30 ? IOF_REGRESSIVO[days - 1] : 0;
+  const iof = gross * iofPct / 100;
+  const ir = (gross - iof) * irPct / 100;
+  const net = gross - iof - ir;
+  return { days, annual, du, gross, iofPct, iof, irPct, ir, net, factor: 1 + net };
+}
+
+function applyYield(res, days, s, txt){
+  const y = rendimentoReais(days, s);
+  res.yieldInfo = null;
+  if (!(days > 0) || !(y.net > 0)){ res.real = res.paid; res.steps.push(txt.zero); return res; }
+  const pv = res.paid / y.factor;
+  const g = pv * y.gross, i = pv * y.iof, r = pv * y.ir;
+  res.steps.push('Até ' + txt.when + ' são ' + days + (days === 1 ? ' dia' : ' dias') + '. Guardando ' + fmtBRL(pv) + ' a ' + fmtNum(s.cdiPct, 1) + '% do CDI, o dinheiro rende ' + fmtBRL(g) + '.');
+  if (i >= 0.005) res.steps.push('Como são menos de 30 dias, o IOF fica com uma parte do rendimento: − ' + fmtBRL(i) + '.');
+  res.steps.push('Imposto de renda de ' + fmtNum(y.irPct, 1) + '% sobre o rendimento: − ' + fmtBRL(r) + '.');
+  res.steps.push('Custo real: ' + fmtBRL(pv) + '. É quanto você precisa separar hoje.');
+  res.real = pv;
+  res.yieldInfo = { days, gross:g, iof:i, ir:r, gain: res.paid - pv, factor: y.factor };
+  return res;
+}
+
+function viaDolar(Y, o){
+  const steps = [];
+  const usdBase = Y / o.jpyPerUsd;
+  steps.push('Para ter ' + fmtJPY(Y) + ', você precisa de ' + fmtUSD(usdBase) + '. ' + o.jpyNote);
+  const usdFee = usdBase * o.usdJpyFee / 100;
+  if (o.usdJpyFee > 0) steps.push(o.usdJpyFeeLabel + ' de ' + fmtPct(o.usdJpyFee, 3) + ' para trocar dólar por iene: + ' + fmtUSD(usdFee) + '.');
+  else if (o.usdJpyFeeMissing) steps.push(o.usdJpyFeeMissing);
+  let usd = usdBase + usdFee;
+  if (o.usdYield != null){
+    if (o.holdDays > 0 && o.usdYield > 0){
+      const f = Math.pow(1 + o.usdYield / 100, o.holdDays / 365);
+      const usdConv = usd / f;
+      steps.push('O dólar fica ' + o.holdDays + ' dias no Rende+, rendendo ' + fmtPct(o.usdYield, 3) + ' ao ano. Ele rende ' + fmtUSD(usd - usdConv) + ', então basta trocar ' + fmtUSD(usdConv) + '.');
+      usd = usdConv;
+    } else {
+      steps.push('A troca e a compra caem no mesmo dia, então o dólar não chega a render.');
+    }
+  }
+  const base = usd * o.brlPerUsd;
+  steps.push(fmtUSD(usd) + ' custam ' + fmtBRL(base) + '. ' + o.usdNote);
+  const fee = base * o.brlFee / 100;
+  if (o.brlFee > 0) steps.push(o.brlFeeLabel + ' de ' + fmtPct(o.brlFee, 3) + ': + ' + fmtBRL(fee) + '.');
+  const iof = base * o.iof / 100;
+  steps.push('IOF de ' + fmtPct(o.iof, 3) + ': + ' + fmtBRL(iof) + '.');
+  const paid = base + fee + iof;
+  steps.push('Sai da sua conta: ' + fmtBRL(paid) + '.');
+  return { paid, steps };
+}
+
+function direto(Y, o){
+  const steps = [];
+  const base = Y * o.brlPerJpy;
+  steps.push(fmtJPY(Y) + ' custam ' + fmtBRL(base) + '. ' + o.note + ' R$ 1 compra ' + fmtNum(1 / o.brlPerJpy, 2) + ' ienes.');
+  const fee = base * o.fee / 100;
+  if (o.fee > 0) steps.push(o.feeLabel + ' de ' + fmtPct(o.fee, 3) + ': + ' + fmtBRL(fee) + '.');
+  const iof = base * o.iof / 100;
+  steps.push('IOF de ' + fmtPct(o.iof, 3) + ': + ' + fmtBRL(iof) + '.');
+  const paid = base + fee + iof;
+  steps.push('Sai da sua conta: ' + fmtBRL(paid) + '.');
+  return { paid, steps };
+}
+
+function convTxt(s, ctx){
+  return {
+    when: 'o dia da troca (' + fmtDate(s.dateConv) + ')',
+    zero: ctx.dConvRaw < 0 ? 'A data da troca já passou, então não contamos rendimento.' : 'A troca é hoje, então o dinheiro não fica rendendo antes dela.'
+  };
+}
+function mktJpyNote(s){ return 'Câmbio de mercado: 1 dólar = ' + fmtRate(s.mktJpyPerUsd, 2) + ' ienes.'; }
+function mktUsdNote(s){ return 'Câmbio de mercado: 1 dólar = ' + fmtBRLr(s.mktUsdBrl) + '.'; }
+function mktBrlPerJpy(s){ return s.mktUsdBrl / s.mktJpyPerUsd; }
+
+const CALC = {
+  A(Y, s, mode, ctx){
+    const fair = mode === 'fair';
+    const r = viaDolar(Y, {
+      jpyPerUsd: fair ? s.mktJpyPerUsd : s.wiseQJpyPerUsd,
+      jpyNote: fair ? mktJpyNote(s) : 'Cotação da Wise: 1 dólar = ' + fmtRate(s.wiseQJpyPerUsd, 2) + ' ienes.',
+      usdJpyFee: s.wiseFeeUsdJpy, usdJpyFeeLabel: 'Tarifa da Wise',
+      brlPerUsd: fair ? s.mktUsdBrl : s.wiseQUsdBrl,
+      usdNote: fair ? mktUsdNote(s) : 'Cotação da Wise: 1 dólar = ' + fmtBRLr(s.wiseQUsdBrl) + '.',
+      brlFee: s.wiseFeeBrlUsd, brlFeeLabel: 'Tarifa da Wise', iof: s.wiseIofOwn
+    });
+    return applyYield(r, ctx.dConv, s, convTxt(s, ctx));
+  },
+  B(Y, s, mode, ctx){
+    const fair = mode === 'fair';
+    const r = direto(Y, { brlPerJpy: fair ? mktBrlPerJpy(s) : s.wiseQBrlJpy, note: fair ? 'Câmbio de mercado:' : 'Cotação da Wise:', fee: s.wiseFeeBrlJpy, feeLabel: 'Tarifa da Wise', iof: s.wiseIof });
+    return applyYield(r, ctx.dConv, s, convTxt(s, ctx));
+  },
+  C(Y, s, mode, ctx){
+    const fair = mode === 'fair';
+    const r = viaDolar(Y, {
+      jpyPerUsd: fair ? s.mktJpyPerUsd : s.wiseQJpyPerUsd,
+      jpyNote: fair ? mktJpyNote(s) : 'Cotação da Wise: 1 dólar = ' + fmtRate(s.wiseQJpyPerUsd, 2) + ' ienes.',
+      usdJpyFee: s.wiseFeeUsdJpy, usdJpyFeeLabel: 'A pessoa paga tarifa da Wise',
+      brlPerUsd: fair ? s.mktUsdBrl : s.wiseQUsdBrl,
+      usdNote: fair ? mktUsdNote(s) : 'Cotação da Wise: 1 dólar = ' + fmtBRLr(s.wiseQUsdBrl) + '.',
+      brlFee: s.wiseFeeSendUsd, brlFeeLabel: 'Tarifa de envio da Wise', iof: s.wiseIof
+    });
+    return applyYield(r, ctx.dConv, s, convTxt(s, ctx));
+  },
+  D(Y, s, mode, ctx){
+    const fair = mode === 'fair';
+    const r = direto(Y, { brlPerJpy: fair ? mktBrlPerJpy(s) : s.wiseQBrlJpy, note: fair ? 'Câmbio de mercado:' : 'Cotação da Wise:', fee: s.wiseFeeSendJpy, feeLabel: 'Tarifa de envio da Wise', iof: s.wiseIof });
+    return applyYield(r, ctx.dConv, s, convTxt(s, ctx));
+  },
+  E(Y, s, mode, ctx){
+    const fair = mode === 'fair';
+    const r = viaDolar(Y, {
+      jpyPerUsd: fair ? s.mktJpyPerUsd : s.wiseQJpyPerUsd,
+      jpyNote: fair ? mktJpyNote(s) : 'Cotação da Wise: 1 dólar = ' + fmtRate(s.wiseQJpyPerUsd, 2) + ' ienes.',
+      usdJpyFee: s.wiseFeeUsdJpy, usdJpyFeeLabel: 'Tarifa da Wise',
+      usdYield: s.wiseRendeUsd, holdDays: ctx.dHold,
+      brlPerUsd: fair ? s.mktUsdBrl : s.wiseQUsdBrl,
+      usdNote: fair ? mktUsdNote(s) : 'Cotação da Wise: 1 dólar = ' + fmtBRLr(s.wiseQUsdBrl) + '.',
+      brlFee: s.wiseFeeBrlUsd, brlFeeLabel: 'Tarifa da Wise', iof: s.wiseIofOwn
+    });
+    return applyYield(r, ctx.dConv, s, convTxt(s, ctx));
+  },
+  F(Y, s, mode, ctx){
+    const fair = mode === 'fair';
+    const rate = fair ? s.mktUsdBrl * (1 + s.nuSpread / 100) : s.nuQUsdBrl;
+    const jpu = fair ? s.mktJpyPerUsd : 1 / s.mcUsdPerJpy;
+    const r = viaDolar(Y, {
+      jpyPerUsd: jpu,
+      jpyNote: fair ? mktJpyNote(s) : 'Taxa Mastercard: 1 dólar = ' + fmtRate(jpu, 2) + ' ienes.',
+      usdJpyFee: s.nuUsdJpyCost, usdJpyFeeLabel: 'Custo do banco',
+      usdJpyFeeMissing: ctx.nuInformed ? null : 'Custo para gastar o dólar em iene: não informado (contamos 0%).',
+      brlPerUsd: rate,
+      usdNote: fair ? ('Câmbio de mercado (' + fmtBRLr(s.mktUsdBrl) + ') com spread de ' + fmtPct(s.nuSpread, 3) + ': 1 dólar = ' + fmtBRLr(rate) + '.') : ('Cotação do app, sem IOF: 1 dólar = ' + fmtBRLr(rate) + '.'),
+      brlFee: 0, iof: s.nuIof
+    });
+    return applyYield(r, ctx.dConv, s, convTxt(s, ctx));
+  },
+  G(Y, s, mode, ctx){
+    const fair = mode === 'fair';
+    const rate = fair ? mktBrlPerJpy(s) * (1 + s.nuSpread / 100) : s.nuQBrlJpy;
+    const r = direto(Y, { brlPerJpy: rate, note: fair ? ('Câmbio de mercado com spread de ' + fmtPct(s.nuSpread, 3) + ':') : 'Cotação do app, sem IOF:', fee: 0, iof: s.nuIof });
+    return applyYield(r, ctx.dConv, s, convTxt(s, ctx));
+  },
+  H(Y, s, mode, ctx){
+    const fair = mode === 'fair';
+    const steps = [];
+    const usdPerJpy = fair ? 1 / s.mktJpyPerUsd : s.mcUsdPerJpy;
+    const usdbrl = fair ? s.mktUsdBrl * (1 + s.cardSpread / 100) : s.cardRate;
+    const usd = Y * usdPerJpy;
+    steps.push(fair
+      ? 'A Mastercard converte ' + fmtJPY(Y) + ' em ' + fmtUSD(usd) + '. ' + mktJpyNote(s)
+      : 'A Mastercard converte ' + fmtJPY(Y) + ' em ' + fmtUSD(usd) + ' (1 iene = ' + fmtNum(usdPerJpy, 7) + ' dólar, sem taxa bancária).');
+    const V = usd * usdbrl;
+    steps.push(fair
+      ? 'O Nubank cobra o dólar de mercado (' + fmtBRLr(s.mktUsdBrl) + ') mais ' + fmtPct(s.cardSpread, 3) + ' de spread: ' + fmtBRLr(usdbrl) + ' por dólar. A compra fica em ' + fmtBRL(V) + '.'
+      : 'Na taxa do cartão Nubank (' + fmtBRLr(usdbrl) + ' por dólar, já com o spread), a compra fica em ' + fmtBRL(V) + '.');
+    const iof = V * s.cardIof / 100;
+    steps.push('IOF de ' + fmtPct(s.cardIof, 3) + ': + ' + fmtBRL(iof) + '.');
+    const refund = s.cardIofRefund ? iof : 0;
+    if (s.cardIofRefund) steps.push('O banco devolve o IOF na fatura: − ' + fmtBRL(refund) + '.');
+    else steps.push('Sem estorno do IOF.');
+    const cb = V * s.cardCashback / 100;
+    if (s.cardCashback > 0) steps.push('Cashback de ' + fmtPct(s.cardCashback, 3) + ' sobre a compra: − ' + fmtBRL(cb) + '.');
+    const paid = V + iof - refund - cb;
+    steps.push('Total na fatura: ' + fmtBRL(paid) + '.');
+    const r = applyYield({ paid, steps }, ctx.dBill, s, {
+      when: 'o vencimento da fatura (' + fmtDate(s.dateBill) + ')',
+      zero: ctx.dBillRaw < 0 ? 'A data da fatura já passou, então não contamos rendimento.' : 'A fatura vence hoje, então não há rendimento.'
+    });
+    const paidNoRefund = V + iof - cb;
+    r.paidNoRefund = paidNoRefund;
+    r.realNoRefund = paidNoRefund * (r.real / r.paid);
+    return r;
+  }
+};
+
+function effectiveYen(p){
+  const sticker = Number(p.priceJpy) || 0;
+  return p.taxFree ? sticker / 1.1 : sticker;
+}
+
+/* Calcula todas as formas para uma compra. s = valores das taxas; mode = 'fair' | 'app' */
+function calcPurchase(p, s, mode, today, opts){
+  today = today || todayISO();
+  opts = opts || {};
+  const sticker = Number(p.priceJpy) || 0;
+  const Y = effectiveYen(p);
+  const S = Object.assign({}, s);
+  S.dateConv = validISO(s.dateConv) ? s.dateConv : today;
+  S.dateBuy = validISO(s.dateBuy) ? s.dateBuy : today;
+  S.dateBill = validISO(s.dateBill) ? s.dateBill : today;
+  const ctx = { today, dConvRaw: daysBetween(today, S.dateConv), dBillRaw: daysBetween(today, S.dateBill), nuInformed: !!opts.nuInformed };
+  ctx.dConv = Math.max(0, ctx.dConvRaw);
+  ctx.dBill = Math.max(0, ctx.dBillRaw);
+  ctx.dHold = Math.max(0, daysBetween(S.dateConv < today ? today : S.dateConv, S.dateBuy));
+  if (!(Y > 0)) return { valid:false, sticker, Y, list:[], ctx };
+
+  const list = [];
+  METHODS.forEach((m, i) => {
+    let r;
+    try { r = CALC[m.id](Y, S, mode, ctx); } catch (e) { r = null; }
+    if (!r || !isFinite(r.paid) || !isFinite(r.real) || r.real <= 0) return;
+    r.id = m.id; r.bank = m.bank; r.name = m.name; r.short = m.short; r.order = i; r.tags = [];
+    list.push(r);
+  });
+  if (!list.length) return { valid:false, sticker, Y, list:[], ctx };
+  list.sort((a, b) => (a.real - b.real) || (a.paid - b.paid) || (a.order - b.order));
+  const best = list[0];
+  list.forEach(r => { r.extra = r.real - best.real; r.extraPct = r.extra / best.real * 100; });
+
+  const H = list.find(r => r.id === 'H');
+  const others = list.filter(r => r.id !== 'H');
+  let turn = null, dependsRefund = false;
+  if (H && others.length){
+    const bo = others[0];
+    if (best.id === 'H'){
+      turn = { dir:'up', pct: (bo.real / H.real - 1) * 100, vs: bo };
+      if (S.cardIofRefund && H.realNoRefund > bo.real) dependsRefund = true;
+    } else {
+      turn = { dir:'down', pct: (1 - best.real / H.real) * 100, vs: best };
+    }
+  }
+  if (H){
+    H.tags.push('Câmbio definido só no dia da compra');
+    if (S.cardIofRefund) H.tags.push('Depende do estorno do IOF');
+  }
+  const F = list.find(r => r.id === 'F');
+  if (F && !ctx.nuInformed) F.tags.push('Custo para gastar em iene: não informado');
+  const E = list.find(r => r.id === 'E');
+  if (E && ctx.dHold === 0) E.tags.push('Sem dias para o dólar render');
+
+  return { valid:true, sticker, Y, list, best, second: list[1] || null, turn, dependsRefund, ctx, mode, S };
+}
+
+function storyFor(R, s){
+  const b = R.best;
+  const parts = [METHOD[b.id].verb(s) + ', você gasta cerca de ' + fmtBRL0(b.paid) + '.'];
+  if (b.paid - b.real >= 1){
+    parts.push(b.id === 'H'
+      ? 'Se deixar o dinheiro rendendo até pagar a fatura, o custo real cai para cerca de ' + fmtBRL0(b.real) + '.'
+      : 'Se deixar o dinheiro rendendo até o dia da troca, o custo real cai para cerca de ' + fmtBRL0(b.real) + '.');
+  }
+  if (b.id === 'E' && R.ctx.dHold > 0) parts.push('O dólar rende até o dia da compra, e isso já está na conta.');
+  if (R.second){
+    const d = R.second.real - b.real;
+    if (d < 1) parts.push('Empata com a forma ' + R.second.id + ' (' + R.second.short + '): a diferença é de centavos.');
+    else parts.push('Sai cerca de ' + fmtBRL0(d) + ' mais barato que a segunda opção (' + R.second.short + ').');
+  }
+  return parts.join(' ');
+}
+
+function alertsFor(R, st){
+  const a = [];
+  if (!R.valid) return a;
+  if (R.best.id === 'H'){
+    a.push('No cartão, o câmbio só é definido no dia da compra.');
+    if (R.dependsRefund) a.push('Essa opção depende do estorno do IOF. Sem ele, a melhor seria ' + R.turn.vs.short + '.');
+    if (R.turn && R.turn.pct > 0.05) a.push('Se o dólar subir mais de ' + fmtPct(R.turn.pct, 1) + ' até a compra, o cartão deixa de compensar.');
+    else if (R.turn) a.push('O cartão está praticamente empatado com ' + R.turn.vs.short + '. Qualquer alta do dólar até a compra já muda o resultado.');
+  } else if (R.turn && R.turn.pct > 0){
+    a.push('Se o dólar cair mais de ' + fmtPct(R.turn.pct, 1) + ' até a compra, o cartão passa a compensar.');
+  }
+  if (R.best.id === 'F' && !st.informed.nuUsdJpyCost) a.push('A Conta Global pode cobrar para gastar o dólar em iene. Esse custo não foi informado e está como 0%.');
+  const keys = st.mode === 'fair' ? ['mktUsdBrl','mktJpyPerUsd'] : ['wiseQUsdBrl','wiseQBrlJpy','nuQUsdBrl','cardRate','mcUsdPerJpy'];
+  let oldest = null;
+  keys.forEach(k => { const u = st.updated[k]; if (validISO(u) && (!oldest || u < oldest)) oldest = u; });
+  if (oldest){
+    const age = daysBetween(oldest, todayISO());
+    if (age > 7) a.push('Algumas cotações são de ' + fmtDate(oldest) + ', há ' + age + ' dias. Confira na tela Taxas.');
+  }
+  return a;
+}
+
+/* ===================== Armazenamento (IndexedDB) ===================== */
+const Store = {
+  db: null,
+  mem: { purchases:new Map(), photos:new Map(), kv:new Map() },
+  open(){
+    return new Promise(resolve => {
+      let done = false;
+      const fin = v => { if (!done){ done = true; resolve(v); } };
+      try {
+        if (!('indexedDB' in window) || !window.indexedDB) return fin(false);
+        const req = indexedDB.open(APP_ID, 1);
+        req.onupgradeneeded = () => {
+          const d = req.result;
+          if (!d.objectStoreNames.contains('purchases')) d.createObjectStore('purchases', { keyPath:'id' });
+          if (!d.objectStoreNames.contains('photos')) d.createObjectStore('photos');
+          if (!d.objectStoreNames.contains('kv')) d.createObjectStore('kv');
+        };
+        req.onsuccess = () => { if (done){ try { req.result.close(); } catch(e){} return; } Store.db = req.result; fin(true); };
+        req.onerror = () => fin(false);
+        req.onblocked = () => fin(false);
+        setTimeout(() => fin(false), 5000);
+      } catch (e) { fin(false); }
+    });
+  },
+  run(store, mode, fn){
+    return new Promise((resolve, reject) => {
+      let tx, req;
+      try { tx = Store.db.transaction(store, mode); req = fn(tx.objectStore(store)); }
+      catch (e) { reject(e); return; }
+      tx.oncomplete = () => resolve(req ? req.result : undefined);
+      tx.onerror = () => reject(tx.error);
+      tx.onabort = () => reject(tx.error);
+    });
+  },
+  get(store, key){ return Store.db ? Store.run(store, 'readonly', os => os.get(key)) : Promise.resolve(Store.mem[store].get(key)); },
+  put(store, val, key){
+    if (!Store.db){ Store.mem[store].set(key === undefined ? val.id : key, val); return Promise.resolve(); }
+    return Store.run(store, 'readwrite', os => key === undefined ? os.put(val) : os.put(val, key));
+  },
+  del(store, key){ if (!Store.db){ Store.mem[store].delete(key); return Promise.resolve(); } return Store.run(store, 'readwrite', os => os.delete(key)); },
+  all(store){ return Store.db ? Store.run(store, 'readonly', os => os.getAll()) : Promise.resolve([...Store.mem[store].values()]); },
+  clear(store){ if (!Store.db){ Store.mem[store].clear(); return Promise.resolve(); } return Store.run(store, 'readwrite', os => os.clear()); }
+};
+
+/* ===================== Estado ===================== */
+const state = {
+  settings: null,
+  purchases: [],
+  photoURLs: new Map(),
+  filter: 'all',
+  view: 'compras',
+  sheet: null,          // {kind:'details'|'form', id}
+  form: null,           // {photo: undefined|Blob|null}
+  pendingImport: null,
+  persistent: false
+};
+
+function defaultSettings(){
+  const t = todayISO();
+  const values = {}, updated = {};
+  FIELDS.forEach(f => {
+    if (f.kind === 'date') values[f.key] = addDays(t, f.defDays);
+    else values[f.key] = f.def;
+    if (RATE_KEYS.includes(f.key)) updated[f.key] = DEFAULTS_DATE;
+  });
+  return { values, updated, informed: { nuUsdJpyCost:false }, mode:'fair' };
+}
+
+function mergeSettings(saved){
+  const d = defaultSettings();
+  if (!saved || typeof saved !== 'object') return d;
+  const v = saved.values || {};
+  FIELDS.forEach(f => {
+    const x = v[f.key];
+    if (f.kind === 'date'){ if (validISO(x)) d.values[f.key] = x; }
+    else if (f.kind === 'text'){ if (typeof x === 'string') d.values[f.key] = x.slice(0, 80); }
+    else if (f.kind === 'bool'){ if (typeof x === 'boolean') d.values[f.key] = x; }
+    else if (typeof x === 'number' && isFinite(x) && x >= 0){ d.values[f.key] = x; }
+  });
+  const u = saved.updated || {};
+  RATE_KEYS.forEach(k => { if (validISO(u[k])) d.updated[k] = u[k]; });
+  if (saved.informed && typeof saved.informed.nuUsdJpyCost === 'boolean') d.informed.nuUsdJpyCost = saved.informed.nuUsdJpyCost;
+  if (saved.mode === 'fair' || saved.mode === 'app') d.mode = saved.mode;
+  return d;
+}
+
+let saveTimer = null;
+function saveSettings(now){
+  clearTimeout(saveTimer);
+  const go = () => Store.put('kv', JSON.parse(JSON.stringify(state.settings)), 'settings').catch(() => toast('Não deu para salvar as taxas'));
+  if (now) return go();
+  saveTimer = setTimeout(go, 250);
+}
+
+function calcFor(p){
+  const st = state.settings;
+  return calcPurchase(p, st.values, st.mode, todayISO(), { nuInformed: st.informed.nuUsdJpyCost });
+}
+
+/* ===================== Fotos ===================== */
+function loadImage(src){
+  return new Promise((res, rej) => { const img = new Image(); img.onload = () => res(img); img.onerror = () => rej(new Error('img')); img.src = src; });
+}
+async function processPhoto(file){
+  const url = URL.createObjectURL(file);
+  try {
+    const img = await loadImage(url);
+    const w = img.naturalWidth, h = img.naturalHeight;
+    if (!w || !h) throw new Error('size');
+    const scale = Math.min(1, 1000 / Math.max(w, h));
+    const cw = Math.max(1, Math.round(w * scale)), ch = Math.max(1, Math.round(h * scale));
+    const c = document.createElement('canvas');
+    c.width = cw; c.height = ch;
+    const ctx = c.getContext('2d');
+    ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, cw, ch);
+    ctx.imageSmoothingQuality = 'high';
+    ctx.drawImage(img, 0, 0, cw, ch);
+    const blob = await new Promise(r => c.toBlob(r, 'image/jpeg', 0.8));
+    if (!blob) throw new Error('blob');
+    return blob;
+  } finally { URL.revokeObjectURL(url); }
+}
+function blobToArrayBuffer(b){
+  if (b.arrayBuffer) return b.arrayBuffer();
+  return new Promise((res, rej) => { const fr = new FileReader(); fr.onload = () => res(fr.result); fr.onerror = rej; fr.readAsArrayBuffer(b); });
+}
+function blobToDataURL(b){
+  return new Promise((res, rej) => { const fr = new FileReader(); fr.onload = () => res(fr.result); fr.onerror = rej; fr.readAsDataURL(b); });
+}
+function dataURLToBlob(u){
+  const m = /^data:([^;,]*)(;base64)?,([\s\S]*)$/.exec(u || '');
+  if (!m) return null;
+  const type = m[1] || 'image/jpeg';
+  try {
+    if (m[2]){
+      const bin = atob(m[3].replace(/\s/g, ''));
+      const arr = new Uint8Array(bin.length);
+      for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+      return new Blob([arr], { type });
+    }
+    return new Blob([decodeURIComponent(m[3])], { type });
+  } catch (e) { return null; }
+}
+function recToBlob(rec){
+  if (!rec) return null;
+  if (rec instanceof Blob) return rec;
+  if (rec.data) return new Blob([rec.data], { type: rec.type || 'image/jpeg' });
+  return null;
+}
+function setPhotoURL(id, blob){
+  const old = state.photoURLs.get(id);
+  if (old) URL.revokeObjectURL(old);
+  if (blob) state.photoURLs.set(id, URL.createObjectURL(blob)); else state.photoURLs.delete(id);
+}
+async function savePhoto(id, blob){
+  const data = await blobToArrayBuffer(blob);
+  await Store.put('photos', { type: blob.type || 'image/jpeg', data }, id);
+  setPhotoURL(id, blob);
+}
+async function getPhotoBlob(id){ return recToBlob(await Store.get('photos', id)); }
+
+/* ===================== Utilidades de interface ===================== */
+const $ = (s, r) => (r || document).querySelector(s);
+const $$ = (s, r) => Array.from((r || document).querySelectorAll(s));
+function uid(){ return (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : 'id-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 10); }
+function rd(m, size){ const bank = typeof m === 'string' ? METHOD[m].bank : m.bank; const id = typeof m === 'string' ? m : m.id; return '<span class="rd ' + bank + (size ? ' ' + size : '') + '" aria-hidden="true">' + id + '</span>'; }
+function qBtn(term){ const t = TERMS[term]; return t ? '<button type="button" class="q" data-term="' + term + '" aria-expanded="false" aria-label="O que é ' + esc(t[0]) + '?">?</button>' : ''; }
+
+function toast(msg){
+  const el = $('#toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toast.t);
+  toast.t = setTimeout(() => el.classList.remove('show'), 2400);
+}
+
+let tipOwner = null, tipShownAt = 0;
+function showTip(btn){
+  const t = TERMS[btn.dataset.term];
+  if (!t) return;
+  if (tipOwner === btn){ hideTip(); return; }
+  hideTip();
+  const tip = $('#tip');
+  tip.innerHTML = '<b>' + esc(t[0]) + '</b>' + esc(t[1]);
+  tip.hidden = false;
+  tip.style.left = '0px'; tip.style.top = '0px';
+  const r = btn.getBoundingClientRect();
+  const tw = tip.offsetWidth, th = tip.offsetHeight;
+  const vw = document.documentElement.clientWidth, vh = window.innerHeight;
+  const left = Math.min(Math.max(16, r.left + r.width / 2 - tw / 2), vw - 16 - tw);
+  let top = r.bottom + 10;
+  if (top + th > vh - 16) top = Math.max(16, r.top - 10 - th);
+  tip.style.left = left + 'px'; tip.style.top = top + 'px';
+  btn.setAttribute('aria-expanded', 'true');
+  tipOwner = btn;
+  tipShownAt = performance.now();
+}
+function hideTip(){
+  if (tipOwner) tipOwner.setAttribute('aria-expanded', 'false');
+  tipOwner = null;
+  const tip = $('#tip');
+  if (tip) tip.hidden = true;
+}
+
+function modeHTML(name){
+  const m = state.settings.mode;
+  return '<div class="mode-top" id="' + name + '-label">Como comparar' + qBtn('modos') + '</div>' +
+    '<div class="seg" role="radiogroup" aria-labelledby="' + name + '-label">' +
+      '<label><input type="radio" name="' + name + '" value="fair" data-mode-radio' + (m === 'fair' ? ' checked' : '') + '><span>Comparação justa</span></label>' +
+      '<label><input type="radio" name="' + name + '" value="app" data-mode-radio' + (m === 'app' ? ' checked' : '') + '><span>Cotações dos apps</span></label>' +
+    '</div>' +
+    '<p class="mode-expl">' + (m === 'fair'
+      ? 'Todas as formas usam o mesmo câmbio de mercado; muda só o custo de cada uma.'
+      : 'Cada forma usa a cotação que você viu no app e digitou na tela Taxas.') + '</p>';
+}
+
+/* ===================== Tela Compras ===================== */
+function renderHome(){
+  const tot = { quero:{ y:0, b:0, n:0 }, comprei:{ y:0, b:0, n:0 } };
+  const results = new Map();
+  state.purchases.forEach(p => {
+    const R = calcFor(p);
+    results.set(p.id, R);
+    const t = tot[p.status === 'comprei' ? 'comprei' : 'quero'];
+    t.n++;
+    if (R.valid){ t.y += R.Y; t.b += R.best.real; }
+  });
+  const col = (title, t) => '<div class="sum-col"><h2>' + title + '</h2>' +
+    '<span class="sum-brl">' + fmtBRL0(t.b) + '</span>' +
+    '<span class="sum-yen num">' + fmtJPY(t.y) + '</span>' +
+    '<span class="sum-count">' + (t.n === 1 ? '1 compra' : t.n + ' compras') + '</span></div>';
+  $('#summary').innerHTML = '<div class="summary">' + col('Quero comprar', tot.quero) + col('Comprei', tot.comprei) +
+    '<p class="sum-note">Pela forma mais barata de cada compra, em <span style="white-space:nowrap">custo real' + qBtn('custoReal') + '</span></p></div>';
+
+  $('#mode-home').innerHTML = state.purchases.length ? modeHTML('mode-home') : '';
+
+  const f = state.filter;
+  $('#filters').innerHTML = state.purchases.length ? '<div class="seg seg-filter" role="radiogroup" aria-label="Mostrar">' +
+    [['all','Todas'],['quero','Quero comprar'],['comprei','Comprei']].map(([v, l]) =>
+      '<label><input type="radio" name="filter" value="' + v + '" data-filter-radio' + (f === v ? ' checked' : '') + '><span>' + l + '</span></label>').join('') + '</div>' : '';
+
+  const list = state.purchases.slice()
+    .filter(p => f === 'all' || (f === 'comprei' ? p.status === 'comprei' : p.status !== 'comprei'))
+    .sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
+  const grid = $('#grid');
+  if (!state.purchases.length){
+    grid.innerHTML = '<div class="empty">' + ICON.mark + '<h2>Nenhuma compra ainda</h2><p>Adicione a primeira e veja na hora a forma mais barata de pagar.</p><button type="button" class="btn primary" data-action="new">Adicionar compra</button></div>';
+    return;
+  }
+  if (!list.length){
+    grid.innerHTML = '<div class="empty"><h2>Nada por aqui</h2><p>Nenhuma compra com esse status.</p></div>';
+    return;
+  }
+  grid.innerHTML = list.map(p => cardHTML(p, results.get(p.id))).join('');
+}
+
+function cardHTML(p, R){
+  const url = state.photoURLs.get(p.id);
+  const photo = url ? '<img src="' + url + '" alt="">' : '<span class="ph-empty">' + ICON.bag + '</span>';
+  const flag = p.status === 'comprei' ? '<span class="pc-flag">' + ICON.check + 'Comprei</span>' : '';
+  let money;
+  if (R && R.valid){
+    const b = R.best;
+    money = '<span class="pc-brl">' + fmtBRL0(b.real) + '</span>' +
+      (b.paid - b.real >= 1 ? '<span class="pc-cap">' + (b.id === 'H' ? 'na fatura: ' : 'você paga ') + fmtBRL0(b.paid) + '</span>' : '') +
+      '<span class="badge">' + rd(b, 'sm') + '<span>Melhor: ' + esc(b.short) + '</span></span>';
+  } else {
+    money = '<span class="pc-cap">Sem preço válido. Toque para editar.</span>';
+  }
+  return '<button type="button" class="pcard" data-action="open" data-id="' + esc(p.id) + '">' +
+    '<span class="pc-photo">' + photo + flag + '</span>' +
+    '<span class="pc-body"><span class="pc-title">' + esc(p.title) + '</span>' +
+    '<span class="pc-yen num">' + fmtJPY(p.priceJpy) + (p.taxFree ? ' (tax-free)' : '') + '</span>' + money + '</span></button>';
+}
+
+/* ===================== Painel (sheet) ===================== */
+const Sheet = {
+  isOpen: false, lastFocus: null, scrollY: 0,
+  open(title, html){
+    const root = $('#sheet-root');
+    $('#sheet-title').textContent = title;
+    $('#sheet-body').innerHTML = html;
+    $('#sheet-body').scrollTop = 0;
+    if (!Sheet.isOpen){
+      Sheet.lastFocus = document.activeElement;
+      Sheet.scrollY = window.scrollY;
+      document.body.style.position = 'fixed';
+      document.body.style.top = (-Sheet.scrollY) + 'px';
+      document.body.style.left = '0'; document.body.style.right = '0';
+      ['#app', '.tabbar', '#fab'].forEach(s => { const el = $(s); if (el) el.inert = true; });
+      root.hidden = false;
+      void root.offsetHeight;
+      root.classList.add('open');
+      Sheet.isOpen = true;
+    }
+    $('#sheet').style.transform = '';
+    setTimeout(() => { try { $('#sheet-title').focus({ preventScroll:true }); } catch(e){} }, 30);
+  },
+  update(title, html, keepScroll){
+    const body = $('#sheet-body');
+    const y = body.scrollTop;
+    $('#sheet-title').textContent = title;
+    body.innerHTML = html;
+    body.scrollTop = keepScroll ? y : 0;
+  },
+  close(){
+    if (!Sheet.isOpen) return;
+    hideTip();
+    const root = $('#sheet-root');
+    root.classList.remove('open');
+    $('#sheet').style.transform = '';
+    Sheet.isOpen = false;
+    state.sheet = null; state.form = null;
+    ['#app', '.tabbar', '#fab'].forEach(s => { const el = $(s); if (el) el.inert = false; });
+    document.body.style.position = ''; document.body.style.top = ''; document.body.style.left = ''; document.body.style.right = '';
+    window.scrollTo(0, Sheet.scrollY);
+    setTimeout(() => { if (!Sheet.isOpen){ root.hidden = true; $('#sheet-body').innerHTML = ''; } }, 380);
+    if (Sheet.lastFocus && document.contains(Sheet.lastFocus)) { try { Sheet.lastFocus.focus({ preventScroll:true }); } catch(e){} }
+  }
+};
+
+/* arrastar para baixo para fechar */
+(function setupDrag(){
+  let startY = 0, lastY = 0, lastT = 0, vel = 0, dragging = false;
+  const sheet = () => $('#sheet');
+  function down(e){
+    if (e.target.closest('button,a,input,textarea,select')) return;
+    if (!e.target.closest('.grab,.sheet-head')) return;
+    dragging = true; startY = lastY = e.clientY; lastT = performance.now(); vel = 0;
+    sheet().classList.add('dragging');
+    try { e.target.setPointerCapture(e.pointerId); } catch(err){}
+  }
+  function move(e){
+    if (!dragging) return;
+    const dy = Math.max(0, e.clientY - startY);
+    const now = performance.now();
+    vel = (e.clientY - lastY) / Math.max(1, now - lastT);
+    lastY = e.clientY; lastT = now;
+    sheet().style.transform = 'translateY(' + dy + 'px)';
+  }
+  function up(e){
+    if (!dragging) return;
+    dragging = false;
+    sheet().classList.remove('dragging');
+    const dy = Math.max(0, (e.clientY || lastY) - startY);
+    if (dy > 120 || (vel > 0.6 && dy > 30)) Sheet.close();
+    else sheet().style.transform = '';
+  }
+  document.addEventListener('pointerdown', e => { if (e.target.closest('#sheet')) down(e); });
+  document.addEventListener('pointermove', move);
+  document.addEventListener('pointerup', up);
+  document.addEventListener('pointercancel', up);
+})();
+
+/* ===================== Detalhes ===================== */
+function openDetails(id, keepScroll){
+  const p = state.purchases.find(x => x.id === id);
+  if (!p){ Sheet.close(); return; }
+  state.sheet = { kind:'details', id };
+  const html = detailsHTML(p);
+  if (Sheet.isOpen && keepScroll) Sheet.update('Detalhes da compra', html, true);
+  else if (Sheet.isOpen) Sheet.update('Detalhes da compra', html, false);
+  else Sheet.open('Detalhes da compra', html);
+}
+
+function detailsHTML(p){
+  const st = state.settings;
+  const R = calcFor(p);
+  const url = state.photoURLs.get(p.id);
+  let h = '<div class="d-head">';
+  if (url) h += '<button type="button" class="d-thumb" data-action="zoom-photo" aria-expanded="false" aria-controls="d-photo" aria-label="Ver foto maior"><img src="' + url + '" alt=""></button>';
+  h += '<div class="d-headtxt"><h3 class="d-title" id="d-title">' + esc(p.title) + '</h3>' +
+    '<p class="d-price"><strong class="num">' + fmtJPY(p.priceJpy) + '</strong>' +
+    (p.taxFree && R.valid ? ' <span class="d-tf">com tax-free: ' + fmtJPY(R.Y) + qBtn('taxfree') + '</span>' : '') + '</p></div></div>';
+  if (url) h += '<div class="d-photo" id="d-photo" hidden><img src="' + url + '" alt="Foto de ' + esc(p.title) + '"></div>';
+  h += '<div class="chips">' +
+    (p.store ? '<span class="chip">' + esc(p.store) + '</span>' : '') +
+    '<span class="chip">' + (p.status === 'comprei' ? 'Comprei' : 'Quero comprar') + '</span>' +
+    (p.taxFree ? '<span class="chip">Loja com tax-free</span>' : '<span class="chip">Sem tax-free</span>') + '</div>';
+
+  if (!R.valid){
+    h += '<div class="answer"><p class="story">Falta um preço válido em ienes. Toque em Editar para corrigir.</p></div>';
+    h += actionsHTML(p);
+    return h;
+  }
+  const b = R.best;
+  h += '<div class="answer" aria-labelledby="ans-k"><p class="answer-k" id="ans-k">Forma mais barata</p>' +
+    '<div class="answer-m">' + rd(b, 'lg') + '<span>' + esc(b.name) + '</span></div>' +
+    '<div class="answer-v">' + fmtBRL0(b.real) + '</div>' +
+    (b.paid - b.real >= 1
+      ? '<div class="answer-c">Custo real' + qBtn('custoReal') + '</div><div class="answer-c">' + (b.id === 'H' ? 'Na fatura: ' : 'Sai da conta: ') + fmtBRL(b.paid) + '</div>'
+      : '<div class="answer-c">Custo em reais: ' + fmtBRL(b.paid) + '</div>') +
+    '<p class="story">' + esc(storyFor(R, st.values)) + '</p>' +
+    alertsFor(R, st).map(t => '<div class="alert">' + ICON.info + '<span>' + esc(t) + '</span></div>').join('') +
+    '</div>';
+
+  h += '<h3 class="sec-h">Todas as formas de pagar</h3>';
+  h += '<div class="mode-box" style="margin:0 0 12px">' + modeHTML('mode-sheet') + '</div>';
+  const maxExtra = Math.max(...R.list.map(r => r.extra), 0.01);
+  h += '<ol class="rank">' + R.list.map((r, i) => {
+    const w = r.extra <= 0.005 ? 0 : Math.max(2, r.extra / maxExtra * 100);
+    return '<li><div class="rk-top">' + rd(r) + '<span class="rk-name">' + esc(r.name) + '</span><span class="rk-val">' + fmtBRL(r.real) + '</span></div>' +
+      '<div class="rk-sub">' + (i === 0
+        ? '<span class="rk-best">Mais barata</span>'
+        : '<span class="bar" aria-hidden="true"><i style="width:' + w.toFixed(1) + '%"></i></span><span class="rk-extra">+ ' + fmtBRL(r.extra) + ' (' + fmtPct(r.extraPct, 1) + ')</span>') + '</div>' +
+      (r.tags.length ? '<div class="rk-tags">' + r.tags.map(t => '<span class="tag">' + esc(t) + '</span>').join('') + '</div>' : '') +
+      '</li>';
+  }).join('') + '</ol>';
+
+  h += '<h3 class="sec-h">Como chegamos nesse valor</h3><div class="how">';
+  h += '<p class="how-base">' + (p.taxFree
+    ? 'Preço da etiqueta: ' + fmtJPY(p.priceJpy) + '. Com tax-free, o imposto de 10% volta para você, então a conta usa ' + fmtJPY(R.Y) + '. '
+    : 'Preço: ' + fmtJPY(p.priceJpy) + '. ') +
+    (st.mode === 'fair' ? 'Modo comparação justa: todas usam o mesmo câmbio de mercado.' : 'Modo cotações dos apps: cada forma usa a cotação que você digitou.') + '</p>';
+  h += R.list.map(r => '<details><summary>' + rd(r) + '<span class="rk-name">' + esc(r.name) + '</span><span class="rk-val">' + fmtBRL(r.real) + '</span>' + ICON.chev + '</summary><ol>' +
+    r.steps.map(s => '<li>' + esc(s) + '</li>').join('') + '</ol></details>').join('');
+  h += '</div>';
+
+  if (p.notes) h += '<h3 class="sec-h">Observações</h3><div class="notes">' + esc(p.notes) + '</div>';
+  h += actionsHTML(p);
+  return h;
+}
+
+function actionsHTML(p){
+  return '<div class="d-actions">' +
+    '<button type="button" class="btn" data-action="edit" data-id="' + esc(p.id) + '">' + ICON.edit + 'Editar</button>' +
+    '<button type="button" class="btn" data-action="dup" data-id="' + esc(p.id) + '">' + ICON.copy + 'Duplicar</button>' +
+    '<button type="button" class="btn danger-text" data-action="del" data-id="' + esc(p.id) + '">' + ICON.trash + 'Excluir</button>' +
+    '</div><div id="del-confirm"></div>';
+}
+
+/* ===================== Formulário ===================== */
+function openForm(id){
+  const p = id ? state.purchases.find(x => x.id === id) : null;
+  state.sheet = { kind:'form', id: p ? p.id : null };
+  state.form = { photo: undefined };
+  const html = formHTML(p);
+  const title = p ? 'Editar compra' : 'Nova compra';
+  if (Sheet.isOpen) Sheet.update(title, html); else Sheet.open(title, html);
+  updatePriceHint();
+}
+
+function formHTML(p){
+  const v = p || { title:'', priceJpy:'', store:'', taxFree:false, status:'quero', notes:'' };
+  const url = p ? state.photoURLs.get(p.id) : null;
+  return '<form id="pform" novalidate>' +
+    '<div class="form-row"><span class="lbl" id="ph-lbl">Foto</span><div class="photo-pick">' +
+      '<div class="photo-prev" id="photo-prev">' + (url ? '<img src="' + url + '" alt="Foto atual">' : ICON.camera) + '</div>' +
+      '<div class="photo-btns">' +
+        '<label class="btn small" for="photo-input" id="photo-btn">' + (url ? 'Trocar foto' : 'Adicionar foto') + '</label>' +
+        '<input type="file" id="photo-input" class="vh" accept="image/*" aria-labelledby="ph-lbl photo-btn">' +
+        '<button type="button" class="btn small danger-text" data-action="remove-photo" id="photo-remove"' + (url ? '' : ' hidden') + '>Remover foto</button>' +
+      '</div></div><p class="hint" id="photo-msg">Da galeria ou da câmera.</p></div>' +
+    '<div class="form-row"><label for="f-title">Título</label><input id="f-title" class="inp" name="title" value="' + esc(v.title) + '" placeholder="Ex.: Tênis New Balance" autocomplete="off" maxlength="120" enterkeyhint="next"><p class="err" id="e-title" hidden></p></div>' +
+    '<div class="form-row"><label for="f-price">Preço em ienes</label><div class="with-prefix"><span class="pre">¥</span><input id="f-price" class="inp num" name="price" value="' + (v.priceJpy ? esc(NF(0,0).format(v.priceJpy)) : '') + '" inputmode="numeric" placeholder="194.800" autocomplete="off" enterkeyhint="next"></div>' +
+      '<p class="hint" id="price-hint">Use o preço da etiqueta, com imposto.</p><p class="err" id="e-price" hidden></p></div>' +
+    '<div class="form-row"><label for="f-store">Loja<span class="opt">(opcional)</span></label><input id="f-store" class="inp" name="store" value="' + esc(v.store) + '" placeholder="Ex.: Bic Camera Shinjuku" autocomplete="off" maxlength="80"></div>' +
+    '<fieldset class="form-row"><legend>A loja tem tax-free?' + qBtn('taxfree') + '</legend><div class="seg">' +
+      '<label><input type="radio" name="taxFree" value="sim"' + (v.taxFree ? ' checked' : '') + '><span>Sim</span></label>' +
+      '<label><input type="radio" name="taxFree" value="nao"' + (!v.taxFree ? ' checked' : '') + '><span>Não</span></label></div>' +
+      '<p class="hint">O Japão devolve a turistas o imposto de 10% que vem no preço. Com tax-free, a conta usa o preço sem esse imposto.</p></fieldset>' +
+    '<fieldset class="form-row"><legend>Status</legend><div class="seg">' +
+      '<label><input type="radio" name="status" value="quero"' + (v.status !== 'comprei' ? ' checked' : '') + '><span>Quero comprar</span></label>' +
+      '<label><input type="radio" name="status" value="comprei"' + (v.status === 'comprei' ? ' checked' : '') + '><span>Comprei</span></label></div></fieldset>' +
+    '<div class="form-row"><label for="f-notes">Observações<span class="opt">(opcional)</span></label><textarea id="f-notes" class="inp" name="notes" maxlength="2000" placeholder="Ex.: cor azul, tamanho 42">' + esc(v.notes) + '</textarea></div>' +
+    '<div class="form-actions"><button type="submit" class="btn primary block">Salvar compra</button>' +
+      '<button type="button" class="btn block" data-action="cancel-form">Cancelar</button></div>' +
+    '</form>';
+}
+
+function updatePriceHint(){
+  const inp = $('#f-price'); const hint = $('#price-hint');
+  if (!inp || !hint) return;
+  const y = parseYen(inp.value);
+  const tf = ($('input[name="taxFree"]:checked') || {}).value === 'sim';
+  if (!(y > 0)){ hint.textContent = 'Use o preço da etiqueta, com imposto.'; return; }
+  const s = state.settings.values;
+  const rate = s.mktUsdBrl / s.mktJpyPerUsd;
+  const eff = tf ? y / 1.1 : y;
+  hint.textContent = (tf ? 'Com tax-free, ' + fmtJPY(eff) + '. ' : '') + 'Fica perto de ' + fmtBRL0(eff * rate) + ' no câmbio de mercado, antes dos custos.';
+}
+
+async function onPhotoChosen(file){
+  const msg = $('#photo-msg');
+  if (!file) return;
+  if (msg) msg.textContent = 'Preparando a foto…';
+  try {
+    const blob = await processPhoto(file);
+    if (!state.form) return;
+    state.form.photo = blob;
+    const url = URL.createObjectURL(blob);
+    const prev = $('#photo-prev');
+    if (prev){
+      const old = prev.querySelector('img[data-temp]');
+      if (old) URL.revokeObjectURL(old.src);
+      prev.innerHTML = '<img data-temp src="' + url + '" alt="Nova foto">';
+    }
+    const rm = $('#photo-remove'); if (rm) rm.hidden = false;
+    const btn = $('#photo-btn'); if (btn) btn.textContent = 'Trocar foto';
+    if (msg) msg.textContent = 'Foto pronta (' + Math.round(blob.size / 1024) + ' KB).';
+  } catch (e) {
+    if (msg) msg.textContent = 'Não deu para ler essa foto. Tente outra.';
+  }
+}
+
+async function submitForm(form){
+  const title = form.title.value.trim();
+  const price = parseYen(form.price.value);
+  let ok = true;
+  const et = $('#e-title'), ep = $('#e-price');
+  if (!title){ et.textContent = 'Dê um nome para a compra.'; et.hidden = false; form.title.setAttribute('aria-invalid', 'true'); ok = false; }
+  else { et.hidden = true; form.title.removeAttribute('aria-invalid'); }
+  if (!(price > 0)){ ep.textContent = 'Digite o preço em ienes, só números.'; ep.hidden = false; form.price.setAttribute('aria-invalid', 'true'); ok = false; }
+  else { ep.hidden = true; form.price.removeAttribute('aria-invalid'); }
+  if (!ok){ (title ? form.price : form.title).focus(); return; }
+
+  const id = state.sheet && state.sheet.id;
+  const existing = id ? state.purchases.find(x => x.id === id) : null;
+  const now = new Date().toISOString();
+  const p = Object.assign({}, existing || { id: uid(), createdAt: now, hasPhoto:false }, {
+    title, priceJpy: price,
+    store: form.store.value.trim(),
+    taxFree: form.taxFree.value === 'sim',
+    status: form.status.value === 'comprei' ? 'comprei' : 'quero',
+    notes: form.notes.value.trim(),
+    updatedAt: now
+  });
+  const ph = state.form ? state.form.photo : undefined;
+  try {
+    if (ph instanceof Blob){ await savePhoto(p.id, ph); p.hasPhoto = true; }
+    else if (ph === null){ await Store.del('photos', p.id); setPhotoURL(p.id, null); p.hasPhoto = false; }
+    await Store.put('purchases', p);
+  } catch (e) {
+    toast('Não deu para salvar. Tente de novo.');
+    return;
+  }
+  const i = state.purchases.findIndex(x => x.id === p.id);
+  if (i >= 0) state.purchases[i] = p; else state.purchases.push(p);
+  renderHome();
+  openDetails(p.id);
+  toast(existing ? 'Compra atualizada' : 'Compra salva');
+}
+
+async function duplicatePurchase(id){
+  const p = state.purchases.find(x => x.id === id);
+  if (!p) return;
+  const now = new Date().toISOString();
+  const c = Object.assign({}, p, { id: uid(), title: p.title + ' (cópia)', createdAt: now, updatedAt: now });
+  try {
+    if (p.hasPhoto){ const b = await getPhotoBlob(p.id); if (b) await savePhoto(c.id, b); else c.hasPhoto = false; }
+    await Store.put('purchases', c);
+  } catch (e) { toast('Não deu para duplicar.'); return; }
+  state.purchases.push(c);
+  renderHome();
+  openDetails(c.id);
+  toast('Cópia criada');
+}
+
+async function deletePurchase(id){
+  try { await Store.del('purchases', id); await Store.del('photos', id); } catch (e) { toast('Não deu para excluir.'); return; }
+  state.purchases = state.purchases.filter(x => x.id !== id);
+  setPhotoURL(id, null);
+  Sheet.close();
+  renderHome();
+  toast('Compra excluída');
+}
+
+/* ===================== Tela Taxas ===================== */
+function updText(key){
+  const u = state.settings.updated[key];
+  if (!validISO(u)) return { t:'', stale:false };
+  const age = daysBetween(u, todayISO());
+  if (age <= 0) return { t:'Atualizado hoje', stale:false };
+  if (age > 7) return { t:'Atualizado em ' + fmtDate(u) + ', há ' + age + ' dias. Vale conferir.', stale:true };
+  return { t:'Atualizado em ' + fmtDate(u), stale:false };
+}
+
+function linkBtn(key){
+  if (!key) return '';
+  return '<a class="btn small" href="' + LINKS[key] + '" target="_blank" rel="noopener noreferrer" aria-label="Conferir agora: ' + esc(LINK_NAMES[key]) + ' (abre em nova aba)">Conferir agora' + ICON.ext + '</a>';
+}
+
+function fieldHTML(f){
+  const st = state.settings;
+  const v = st.values[f.key];
+  const id = 'f-' + f.key;
+  let h = '<div class="row" data-row="' + f.key + '">';
+  if (f.kind === 'bool'){
+    h += '<div class="row-top"><span class="lbl2" id="' + id + '-l">' + esc(f.label) + '</span>' + qBtn(f.term) + '</div>' +
+      '<div class="seg" role="radiogroup" aria-labelledby="' + id + '-l" style="margin-top:8px">' +
+      '<label><input type="radio" name="' + id + '" value="1" data-bool="' + f.key + '"' + (v ? ' checked' : '') + '><span>Sim</span></label>' +
+      '<label><input type="radio" name="' + id + '" value="0" data-bool="' + f.key + '"' + (!v ? ' checked' : '') + '><span>Não</span></label></div>';
+  } else {
+    h += '<div class="row-top"><label for="' + id + '">' + esc(f.label) + '</label>' + qBtn(f.term) + '</div>';
+    if (f.used) h += '<span class="used">' + (f.used === 'fair' ? 'Usado na comparação justa' : 'Usado em cotações dos apps') + '</span>';
+    if (f.kind === 'text'){
+      h += '<div class="field"><input id="' + id + '" class="inp" data-key="' + f.key + '" value="' + esc(v) + '" autocomplete="off" maxlength="80" style="font-family:var(--font)"></div>';
+    } else if (f.kind === 'date'){
+      h += '<div class="field"><input id="' + id + '" type="date" class="inp" data-key="' + f.key + '" value="' + esc(v) + '" style="font-family:var(--font)"></div>';
+    } else {
+      h += '<div class="field"><input id="' + id + '" class="inp" data-key="' + f.key + '" value="' + esc(fmtInput(v, f.dec)) + '" inputmode="decimal" autocomplete="off" aria-describedby="' + id + '-u"><span class="unit" id="' + id + '-u">' + esc(f.unit) + '</span></div>';
+    }
+  }
+  if (f.flagUninformed && !st.informed[f.key]) h += '<span class="flag" data-flag="' + f.key + '">Não informado</span>';
+  h += '<p class="err" id="' + id + '-e" hidden></p>';
+  if (f.help) h += '<p class="row-help">' + esc(f.help) + '</p>';
+  if (f.remind) h += '<div class="note-box"><strong>Lembrete:</strong> ' + esc(f.remind) + '</div>';
+  if (f.iofHelper) h += '<details class="helper"><summary>Tenho a cotação com IOF</summary><div class="helper-body">' +
+      '<label class="vh" for="' + id + '-iof">Cotação com IOF que apareceu no app</label>' +
+      '<input id="' + id + '-iof" class="inp num" inputmode="decimal" placeholder="Cotação com IOF" data-iof-in="' + f.key + '" autocomplete="off">' +
+      '<p class="helper-out" data-iof-out="' + f.key + '">Digite a cotação que o app mostrou.</p>' +
+      '<button type="button" class="btn small" data-action="use-iof" data-key="' + f.key + '" disabled>Usar este valor</button></div></details>';
+  if (f.spreadHelper) h += '<div class="note-box" data-spread-hint></div>';
+  const meta = (RATE_KEYS.includes(f.key)) ? updText(f.key) : null;
+  if (meta || f.link){
+    h += '<div class="row-meta">' + (meta ? '<span class="upd' + (meta.stale ? ' stale' : '') + '" data-upd="' + f.key + '">' + esc(meta.t) + '</span>' : '<span></span>') + linkBtn(f.link) + '</div>';
+  }
+  return h + '</div>';
+}
+
+function renderTaxas(){
+  $('#mode-taxas').innerHTML = modeHTML('mode-taxas');
+  let h = '';
+  GROUPS.forEach(g => {
+    h += '<section class="group" aria-labelledby="g-' + g.id + '"><div class="group-h"><h2 id="g-' + g.id + '">' + esc(g.title) + '</h2>' +
+      (g.methods.length ? '<span class="group-rds">' + g.methods.map(m => rd(m, 'sm')).join('') + '</span>' : '') + '</div>' +
+      '<p class="group-note">' + esc(g.note) + '</p>';
+    if (g.id === 'mercado') h += '<div class="note-box" style="margin:0 0 10px" data-market-hint></div>';
+    if (g.id === 'wise') h += '<div class="note-box" style="margin:0 0 10px"><strong>Tarifa em % = tarifa em reais ÷ valor convertido.</strong>' +
+      '<div class="mini" style="margin-top:10px"><div><label for="wf-fee">Tarifa em R$</label><input id="wf-fee" class="inp num" inputmode="decimal" data-feecalc autocomplete="off"></div>' +
+      '<div><label for="wf-amt">Valor convertido em R$</label><input id="wf-amt" class="inp num" inputmode="decimal" data-feecalc autocomplete="off"></div></div>' +
+      '<p class="helper-out" id="wf-out" style="margin:8px 0 0">Preencha os dois para ver a tarifa em %.</p></div>';
+    if (g.id === 'nuconta') h += '<div class="note-box" style="margin:0 0 10px"><strong>O app do Nubank Conta Global mostra a cotação já com IOF.</strong> Divida por 1,035 para obter a cotação sem IOF. Nos campos de cotação abaixo, a opção “Tenho a cotação com IOF” faz essa conta.</div>';
+    h += '<div class="rows">' + FIELDS.filter(f => f.g === g.id).map(fieldHTML).join('') + '</div></section>';
+  });
+  h += '<div class="restore" id="restore-box"><button type="button" class="btn block" data-action="restore">Restaurar valores padrão</button></div>';
+  $('#taxas-body').innerHTML = h;
+  refreshTaxasHints();
+}
+
+function refreshTaxasHints(){
+  const s = state.settings.values;
+  const mh = $('[data-market-hint]');
+  if (mh){
+    const r = s.mktUsdBrl / s.mktJpyPerUsd;
+    mh.textContent = (isFinite(r) && r > 0) ? 'Com esses dois valores, 1 iene = R$ ' + fmtRate(r, 5) + '. Ou seja, R$ 1 compra ' + fmtNum(1 / r, 2) + ' ienes.' : 'Preencha o dólar e o iene.';
+  }
+  const sh = $('[data-spread-hint]');
+  if (sh){
+    const sp = (s.cardRate / s.mktUsdBrl - 1) * 100;
+    if (isFinite(sp)){
+      sh.innerHTML = 'Para conferir: taxa do cartão ÷ dólar de mercado do mesmo dia − 1. Com os valores de agora, dá <strong>' + esc(fmtPct(sp, 2)) + '</strong>.' +
+        ' <button type="button" class="btn small" style="margin-top:8px" data-action="use-spread" data-val="' + sp.toFixed(4) + '">Usar ' + esc(fmtPct(sp, 2)) + '</button>';
+    }
+  }
+  const div = 1 + s.nuIof / 100;
+  $$('[data-iof-in]').forEach(inp => updateIofHelper(inp, div));
+}
+
+function updateIofHelper(inp, div){
+  const key = inp.dataset.iofIn;
+  const out = $('[data-iof-out="' + key + '"]');
+  const btn = $('[data-action="use-iof"][data-key="' + key + '"]');
+  const v = parseDecimal(inp.value);
+  if (!(v > 0)){ out.textContent = 'Digite a cotação que o app mostrou.'; btn.disabled = true; delete btn.dataset.val; return; }
+  const r = v / div;
+  out.textContent = fmtRate(v, FIELD[key].dec) + ' ÷ ' + fmtNum(div, 4) + ' = R$ ' + fmtRate(r, FIELD[key].dec) + ' sem IOF.';
+  btn.disabled = false; btn.dataset.val = String(r);
+}
+
+const commitTimers = {};
+function commitField(key, raw, immediate){
+  const f = FIELD[key];
+  const st = state.settings;
+  const errEl = $('#f-' + key + '-e');
+  const inp = $('#f-' + key);
+  let val;
+  if (f.kind === 'text') val = String(raw).slice(0, 80);
+  else if (f.kind === 'date'){ if (!validISO(raw)) return showErr('Escolha uma data.'); val = raw; }
+  else if (f.kind === 'bool') val = !!raw;
+  else {
+    val = parseDecimal(raw);
+    if (!isFinite(val)) return showErr('Digite um número, por exemplo ' + (f.unit === '%' ? '0,66' : '5,08') + '.');
+    if (val < 0) return showErr('O valor não pode ser negativo.');
+    if ((f.unit || '').indexOf('%') === 0 && f.unit !== '% do CDI' && val > 100) return showErr('Use um valor entre 0 e 100.');
+    if (f.unit === '% do CDI' && val > 500) return showErr('Use um valor entre 0 e 500.');
+    if (/por/.test(f.unit || '') && val === 0) return showErr('A cotação precisa ser maior que zero.');
+  }
+  if (errEl) errEl.hidden = true;
+  if (inp) inp.removeAttribute('aria-invalid');
+  const changed = st.values[key] !== val;
+  st.values[key] = val;
+  if (changed && RATE_KEYS.includes(key)){
+    st.updated[key] = todayISO();
+    const u = $('[data-upd="' + key + '"]');
+    if (u){ const m = updText(key); u.textContent = m.t; u.classList.toggle('stale', m.stale); }
+  }
+  if (changed && f.flagUninformed && !st.informed[key]){
+    st.informed[key] = true;
+    const fl = $('[data-flag="' + key + '"]'); if (fl) fl.remove();
+  }
+  if (changed){
+    saveSettings(immediate);
+    refreshTaxasHints();
+    renderHome();
+  }
+  return true;
+  function showErr(msg){
+    if (errEl){ errEl.textContent = msg; errEl.hidden = false; }
+    if (inp) inp.setAttribute('aria-invalid', 'true');
+    return false;
+  }
+}
+
+function setMode(m){
+  if (m !== 'fair' && m !== 'app') return;
+  if (state.settings.mode === m) return;
+  state.settings.mode = m;
+  saveSettings();
+  renderHome();
+  $('#mode-taxas').innerHTML = modeHTML('mode-taxas');
+  if (state.sheet && state.sheet.kind === 'details') openDetails(state.sheet.id, true);
+}
+
+async function restoreDefaults(){
+  const mode = state.settings.mode;
+  state.settings = defaultSettings();
+  state.settings.mode = mode;
+  await saveSettings(true);
+  renderTaxas();
+  renderHome();
+  toast('Valores padrão restaurados');
+}
+
+/* ===================== Backup ===================== */
+async function renderBackup(){
+  let last = null;
+  try { last = await Store.get('kv', 'lastBackup'); } catch (e) {}
+  const nPhotos = state.purchases.filter(p => p.hasPhoto).length;
+  $('#backup-body').innerHTML =
+    '<div class="panel"><h2>Exportar backup</h2><p>Cria um arquivo com ' + state.purchases.length + (state.purchases.length === 1 ? ' compra' : ' compras') +
+      (nPhotos ? ' (' + nPhotos + ' com foto)' : '') + ' e todas as taxas. ' + (last ? 'Último backup: ' + fmtDate(String(last).slice(0, 10)) + '.' : 'Você ainda não fez backup.') + '</p>' +
+      '<button type="button" class="btn primary block" data-action="export">' + ICON.down + 'Exportar backup</button></div>' +
+    '<div class="panel"><h2>Importar backup</h2><p>Abre um arquivo exportado por este app. Antes de mudar qualquer coisa, você escolhe se junta ou substitui.</p>' +
+      '<button type="button" class="btn block" data-action="import">' + ICON.up + 'Importar backup</button><div id="import-box"></div></div>' +
+    '<div class="panel"><h2>Para não perder nada</h2><p>No iPhone, o Safari pode apagar dados de sites pouco usados. Adicione o app à Tela de Início (Compartilhar, depois Adicionar à Tela de Início) e faça backup de vez em quando.</p>' +
+      '<p style="margin:0">' + (Store.db ? 'Os dados estão salvos neste aparelho.' : 'Atenção: este navegador não está salvando os dados.') + '</p></div>';
+}
+
+function downloadFile(file, name){
+  const url = URL.createObjectURL(file);
+  const a = document.createElement('a');
+  a.href = url; a.download = name; a.rel = 'noopener';
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(() => { URL.revokeObjectURL(url); a.remove(); }, 4000);
+}
+
+async function exportBackup(){
+  try {
+    const compras = [];
+    for (const p of state.purchases){
+      const c = Object.assign({}, p);
+      if (p.hasPhoto){ const b = await getPhotoBlob(p.id); if (b) c.foto = await blobToDataURL(b); }
+      compras.push(c);
+    }
+    const data = { app: APP_ID, versao: 1, exportadoEm: new Date().toISOString(), taxas: state.settings, compras };
+    const name = 'pagar-no-japao-backup-' + todayISO() + '.json';
+    const json = JSON.stringify(data);
+    let file;
+    try { file = new File([json], name, { type:'application/json' }); } catch (e) { file = new Blob([json], { type:'application/json' }); }
+    let shared = false;
+    if (window.navigator.standalone && navigator.canShare && file instanceof File && navigator.canShare({ files:[file] })){
+      try { await navigator.share({ files:[file], title: name }); shared = true; }
+      catch (e) { if (e && e.name === 'AbortError') return; }
+    }
+    if (!shared) downloadFile(file, name);
+    window.__lastExport = json;
+    await Store.put('kv', new Date().toISOString(), 'lastBackup');
+    toast('Backup exportado');
+    if (state.view === 'backup') renderBackup();
+  } catch (e) {
+    toast('Não deu para exportar o backup.');
+  }
+}
+
+async function readImportFile(file){
+  const box = $('#import-box');
+  let data;
+  try { data = JSON.parse(await file.text()); } catch (e) { data = null; }
+  if (!data || data.app !== APP_ID || !Array.isArray(data.compras)){
+    state.pendingImport = null;
+    box.innerHTML = '<div class="confirm"><p>Esse arquivo não é um backup deste app. Escolha o arquivo .json exportado aqui.</p></div>';
+    return;
+  }
+  state.pendingImport = data;
+  const n = data.compras.length, nf = data.compras.filter(c => c && c.foto).length;
+  const when = typeof data.exportadoEm === 'string' ? fmtDate(data.exportadoEm.slice(0, 10)) : 'data desconhecida';
+  box.innerHTML = '<div class="confirm" style="background:var(--surface-2)"><p>Backup de ' + esc(when) + ' com ' + n + (n === 1 ? ' compra' : ' compras') + (nf ? ' (' + nf + ' com foto)' : '') + '.</p>' +
+    (data.taxas ? '<label class="check-row"><input type="checkbox" id="imp-rates" checked> Trazer também as taxas</label>' : '') +
+    '<div class="row2" style="margin-top:8px"><button type="button" class="btn" data-action="import-merge">Juntar com as atuais</button><button type="button" class="btn danger" data-action="import-replace">Substituir tudo</button></div>' +
+    '<button type="button" class="btn block" style="margin-top:8px" data-action="import-cancel">Cancelar</button></div>';
+}
+
+function sanitizePurchase(c){
+  if (!c || typeof c !== 'object') return null;
+  const price = typeof c.priceJpy === 'number' ? c.priceJpy : parseYen(c.priceJpy);
+  const title = typeof c.title === 'string' ? c.title.trim().slice(0, 120) : '';
+  if (!title || !(price > 0)) return null;
+  const now = new Date().toISOString();
+  return {
+    id: (typeof c.id === 'string' && c.id.length < 80) ? c.id : uid(),
+    title, priceJpy: Math.round(price),
+    store: typeof c.store === 'string' ? c.store.slice(0, 80) : '',
+    taxFree: !!c.taxFree,
+    status: c.status === 'comprei' ? 'comprei' : 'quero',
+    notes: typeof c.notes === 'string' ? c.notes.slice(0, 2000) : '',
+    createdAt: typeof c.createdAt === 'string' ? c.createdAt : now,
+    updatedAt: typeof c.updatedAt === 'string' ? c.updatedAt : now,
+    hasPhoto: false
+  };
+}
+
+async function applyImport(replace){
+  const data = state.pendingImport;
+  if (!data) return;
+  const withRates = !!($('#imp-rates') && $('#imp-rates').checked);
+  try {
+    if (replace){
+      await Store.clear('purchases'); await Store.clear('photos');
+      state.photoURLs.forEach(u => URL.revokeObjectURL(u));
+      state.photoURLs.clear();
+      state.purchases = [];
+    }
+    let n = 0;
+    for (const raw of data.compras){
+      const p = sanitizePurchase(raw);
+      if (!p) continue;
+      if (raw.foto){ const b = dataURLToBlob(raw.foto); if (b){ await savePhoto(p.id, b); p.hasPhoto = true; } }
+      if (!p.hasPhoto){ await Store.del('photos', p.id); setPhotoURL(p.id, null); }
+      await Store.put('purchases', p);
+      const i = state.purchases.findIndex(x => x.id === p.id);
+      if (i >= 0) state.purchases[i] = p; else state.purchases.push(p);
+      n++;
+    }
+    if (withRates && data.taxas){ state.settings = mergeSettings(data.taxas); await saveSettings(true); renderTaxas(); }
+    state.pendingImport = null;
+    renderHome();
+    renderBackup();
+    toast(n === 1 ? '1 compra importada' : n + ' compras importadas');
+  } catch (e) {
+    toast('Não deu para importar o backup.');
+  }
+}
+
+/* ===================== Navegação ===================== */
+function showView(v, push){
+  if (!['compras','taxas','backup'].includes(v)) v = 'compras';
+  state.view = v;
+  hideTip();
+  ['compras','taxas','backup'].forEach(x => { $('#view-' + x).hidden = x !== v; });
+  $$('.tab').forEach(t => { if (t.dataset.view === v) t.setAttribute('aria-current', 'page'); else t.removeAttribute('aria-current'); });
+  $('#fab').hidden = v !== 'compras';
+  if (v === 'compras') renderHome();
+  if (v === 'taxas') renderTaxas();
+  if (v === 'backup') renderBackup();
+  if (push && location.hash !== '#' + v){ try { history.replaceState(null, '', '#' + v); } catch (e) {} }
+  window.scrollTo(0, 0);
+}
+
+/* ===================== Eventos ===================== */
+document.addEventListener('click', e => {
+  const q = e.target.closest('.q');
+  if (q){ e.preventDefault(); e.stopPropagation(); showTip(q); return; }
+  if (tipOwner && !e.target.closest('#tip')) hideTip();
+  const a = e.target.closest('[data-action]');
+  if (!a) return;
+  const act = a.dataset.action, id = a.dataset.id;
+  switch (act){
+    case 'tab': showView(a.dataset.view, true); break;
+    case 'new': openForm(null); break;
+    case 'open': openDetails(id); break;
+    case 'close-sheet': Sheet.close(); break;
+    case 'edit': openForm(id); break;
+    case 'cancel-form':
+      if (state.sheet && state.sheet.id) openDetails(state.sheet.id); else Sheet.close();
+      break;
+    case 'dup': duplicatePurchase(id); break;
+    case 'zoom-photo': {
+      const ph = $('#d-photo');
+      if (ph){ ph.hidden = !ph.hidden; a.setAttribute('aria-expanded', String(!ph.hidden)); a.setAttribute('aria-label', ph.hidden ? 'Ver foto maior' : 'Esconder foto maior'); }
+      break;
+    }
+    case 'del': {
+      const p = state.purchases.find(x => x.id === id);
+      const box = $('#del-confirm');
+      if (!p || !box) break;
+      box.innerHTML = '<div class="confirm" role="alertdialog" aria-labelledby="del-q"><p id="del-q">Excluir “' + esc(p.title) + '”? Não dá para desfazer.</p>' +
+        '<div class="row2"><button type="button" class="btn" data-action="del-cancel">Cancelar</button><button type="button" class="btn danger" data-action="del-confirm" data-id="' + esc(id) + '">Excluir</button></div></div>';
+      box.scrollIntoView({ block:'nearest', behavior:'smooth' });
+      const btn = box.querySelector('[data-action="del-confirm"]'); if (btn) btn.focus({ preventScroll:true });
+      break;
+    }
+    case 'del-cancel': { const box = $('#del-confirm'); if (box) box.innerHTML = ''; break; }
+    case 'del-confirm': deletePurchase(id); break;
+    case 'remove-photo': {
+      if (!state.form) break;
+      state.form.photo = null;
+      const prev = $('#photo-prev'); if (prev) prev.innerHTML = ICON.camera;
+      a.hidden = true;
+      const btn = $('#photo-btn'); if (btn) btn.textContent = 'Adicionar foto';
+      const msg = $('#photo-msg'); if (msg) msg.textContent = 'A foto sai quando você salvar.';
+      break;
+    }
+    case 'restore': {
+      const box = $('#restore-box');
+      box.innerHTML = '<div class="confirm" role="alertdialog" aria-labelledby="rs-q"><p id="rs-q">Voltar todas as taxas e datas para os valores padrão? Suas compras não mudam.</p>' +
+        '<div class="row2"><button type="button" class="btn" data-action="restore-cancel">Cancelar</button><button type="button" class="btn danger" data-action="restore-confirm">Restaurar</button></div></div>';
+      const b = box.querySelector('[data-action="restore-confirm"]'); if (b) b.focus({ preventScroll:true });
+      break;
+    }
+    case 'restore-cancel': $('#restore-box').innerHTML = '<button type="button" class="btn block" data-action="restore">Restaurar valores padrão</button>'; break;
+    case 'restore-confirm': restoreDefaults(); break;
+    case 'use-spread': {
+      const v = Number(a.dataset.val);
+      if (isFinite(v)){ const inp = $('#f-cardSpread'); if (inp) inp.value = fmtInput(v, 3); commitField('cardSpread', fmtInput(v, 3), true); toast('Spread atualizado'); }
+      break;
+    }
+    case 'use-iof': {
+      const key = a.dataset.key, v = Number(a.dataset.val);
+      if (isFinite(v) && v > 0){ const inp = $('#f-' + key); const txt = fmtInput(v, FIELD[key].dec); if (inp) inp.value = txt; commitField(key, txt, true); toast('Cotação sem IOF salva'); }
+      break;
+    }
+    case 'export': exportBackup(); break;
+    case 'import': { const inp = $('#import-input'); inp.value = ''; inp.click(); break; }
+    case 'import-merge': applyImport(false); break;
+    case 'import-replace': applyImport(true); break;
+    case 'import-cancel': state.pendingImport = null; $('#import-box').innerHTML = ''; break;
+  }
+});
+
+document.addEventListener('change', e => {
+  const t = e.target;
+  if (t.matches('[data-mode-radio]')) return setMode(t.value);
+  if (t.matches('[data-filter-radio]')){ state.filter = t.value; renderHome(); return; }
+  if (t.id === 'photo-input') return onPhotoChosen(t.files && t.files[0]);
+  if (t.id === 'import-input') return t.files && t.files[0] && readImportFile(t.files[0]);
+  if (t.matches('[data-bool]')) return commitField(t.dataset.bool, t.value === '1', true);
+  if (t.matches('#view-taxas [data-key]')){ clearTimeout(commitTimers[t.dataset.key]); commitField(t.dataset.key, t.value, true); return; }
+  if (t.name === 'taxFree') updatePriceHint();
+});
+
+document.addEventListener('input', e => {
+  const t = e.target;
+  if (t.id === 'f-price'){
+    const y = parseYen(t.value);
+    const pos = t.value.length - t.selectionStart;
+    if (y > 0){
+      t.value = NF(0,0).format(y);
+      try { const p = Math.max(0, t.value.length - pos); t.setSelectionRange(p, p); } catch(err){}
+      const ep = $('#e-price'); if (ep) ep.hidden = true;
+      t.removeAttribute('aria-invalid');
+    }
+    updatePriceHint();
+    return;
+  }
+  if (t.id === 'f-title' && t.value.trim()){
+    const et = $('#e-title'); if (et) et.hidden = true;
+    t.removeAttribute('aria-invalid');
+    return;
+  }
+  if (t.matches('#view-taxas [data-key]')){
+    const k = t.dataset.key;
+    clearTimeout(commitTimers[k]);
+    commitTimers[k] = setTimeout(() => commitField(k, t.value), 450);
+    return;
+  }
+  if (t.matches('[data-iof-in]')){ updateIofHelper(t, 1 + state.settings.values.nuIof / 100); return; }
+  if (t.matches('[data-feecalc]')){
+    const fee = parseDecimal($('#wf-fee').value), amt = parseDecimal($('#wf-amt').value);
+    $('#wf-out').textContent = (fee >= 0 && amt > 0) ? fmtBRL(fee) + ' ÷ ' + fmtBRL(amt) + ' = ' + fmtPct(fee / amt * 100, 3) + ' de tarifa.' : 'Preencha os dois para ver a tarifa em %.';
+  }
+});
+
+document.addEventListener('submit', e => {
+  if (e.target.id === 'pform'){ e.preventDefault(); submitForm(e.target); }
+});
+
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Escape') return;
+  if (tipOwner){ hideTip(); return; }
+  if (Sheet.isOpen) Sheet.close();
+});
+window.addEventListener('scroll', () => { if (tipOwner && performance.now() - tipShownAt > 250) hideTip(); }, { passive:true, capture:true });
+window.addEventListener('resize', hideTip);
+window.addEventListener('hashchange', () => showView(location.hash.slice(1), false));
+document.addEventListener('visibilitychange', () => { if (!document.hidden && state.settings && state.view === 'compras') renderHome(); });
+
+/* ===================== Ícone para a Tela de Início ===================== */
+function makeTouchIcon(){
+  try {
+    const c = document.createElement('canvas'); c.width = c.height = 180;
+    const x = c.getContext('2d');
+    x.fillStyle = '#14202B'; x.fillRect(0, 0, 180, 180);
+    x.strokeStyle = '#FFC629'; x.lineWidth = 22;
+    x.beginPath(); x.arc(90, 90, 56, 0, Math.PI * 2); x.stroke();
+    x.fillStyle = '#FFFFFF'; x.font = '700 64px -apple-system, system-ui, sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle';
+    x.fillText('¥', 90, 94);
+    const l = document.createElement('link'); l.rel = 'apple-touch-icon'; l.href = c.toDataURL('image/png');
+    document.head.appendChild(l);
+  } catch (e) {}
+}
+
+/* ===================== Início ===================== */
+async function init(){
+  const ok = await Store.open();
+  state.persistent = ok;
+  if (!ok) $('#storage-banner').hidden = false;
+  let saved = null;
+  try { saved = await Store.get('kv', 'settings'); } catch (e) {}
+  state.settings = mergeSettings(saved);
+  if (!saved) saveSettings(true);
+  try { state.purchases = (await Store.all('purchases')) || []; } catch (e) { state.purchases = []; }
+  for (const p of state.purchases){
+    if (!p.hasPhoto) continue;
+    try { const b = await getPhotoBlob(p.id); if (b) setPhotoURL(p.id, b); } catch (e) {}
+  }
+  showView((location.hash || '#compras').slice(1), false);
+  makeTouchIcon();
+  try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist(); } catch (e) {}
+  document.documentElement.dataset.ready = '1';
+}
+
+/* exposto para testes */
+window.PNJ = { calcPurchase, rendimentoReais, parseDecimal, parseYen, defaultSettings, mergeSettings, effectiveYen, storyFor, alertsFor, daysBetween, addDays, state, METHODS, FIELDS };
+
+init();
+})();
+</script>
+</body>
+</html>
