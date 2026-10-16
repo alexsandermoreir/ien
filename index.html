@@ -60,6 +60,29 @@ a{color:var(--link)}
 .sum-count{display:block;font-size:12.5px;color:var(--ink-3)}
 .sum-col + .sum-col{border-left:1px solid var(--line);padding-left:14px}
 .sum-note{grid-column:1/-1;font-size:12.5px;color:var(--ink-3);margin:6px 0 0}
+.budget{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-card);padding:14px 16px 14px}
+.bg-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.bg-top h2{font-size:14px;font-weight:600;color:var(--ink-2);margin:0}
+.bg-top .linkbtn{font-size:15px;min-height:40px;padding:0 2px}
+.bg-left{font-family:var(--font-num);font-size:34px;font-weight:800;line-height:1.1;letter-spacing:-.015em;margin:2px 0 0}
+.bg-left.neg{color:var(--danger)}
+.bg-of{font-size:13.5px;color:var(--ink-2);margin:2px 0 0}
+.bg-bar{display:flex;height:12px;border-radius:6px;overflow:hidden;background:var(--surface-2);margin:12px 0 10px;border:1px solid var(--line)}
+.bg-bar i{display:block;height:100%;transition:width .35s cubic-bezier(.2,.85,.25,1)}
+.bg-bar .sp{background:var(--ink)}
+.bg-bar .pl{background:repeating-linear-gradient(-45deg,var(--circ-on) 0 5px,color-mix(in srgb,var(--circ-on) 55%,var(--surface)) 5px 10px)}
+.bg-rows{display:grid;gap:6px}
+.bg-row{display:flex;align-items:baseline;gap:8px;font-size:15px}
+.bg-row .dot{flex:none;width:10px;height:10px;border-radius:3px;align-self:center}
+.bg-row .bl{flex:1;color:var(--ink-2);font-weight:500}
+.bg-row .val{font-family:var(--font-num);font-weight:700;white-space:nowrap}
+.bg-row .sub{display:block;font-size:12.5px;color:var(--ink-3);font-weight:400}
+.bg-after{margin:10px 0 0;padding:9px 11px;border-radius:10px;font-size:14.5px;background:var(--green-bg);color:var(--green-ink)}
+.bg-after.neg{background:var(--danger-bg);color:var(--danger)}
+.bg-edit{display:flex;gap:8px;margin:10px 0 2px}
+.bg-edit .with-prefix{flex:1}
+.bg-edit .pre{font-size:16px}
+.bg-edit .inp{padding-left:40px}
 
 /* controles segmentados */
 .seg{display:flex;background:var(--seg-bg);border-radius:12px;padding:2px;gap:2px;margin:0;border:0;min-width:0}
@@ -904,7 +927,7 @@ function defaultSettings(){
     else values[f.key] = f.def;
     if (RATE_KEYS.includes(f.key)) updated[f.key] = DEFAULTS_DATE;
   });
-  return { values, updated, informed: { nuUsdJpyCost:false }, mode:'fair', defaultMethod:'auto', visible: METHODS.map(m => m.id) };
+  return { values, updated, informed: { nuUsdJpyCost:false }, mode:'fair', defaultMethod:'auto', visible: METHODS.map(m => m.id), budget:15000 };
 }
 
 function mergeSettings(saved){
@@ -923,6 +946,7 @@ function mergeSettings(saved){
   if (saved.informed && typeof saved.informed.nuUsdJpyCost === 'boolean') d.informed.nuUsdJpyCost = saved.informed.nuUsdJpyCost;
   if (saved.mode === 'fair' || saved.mode === 'app') d.mode = saved.mode;
   if (Array.isArray(saved.visible)){ const v2 = METHODS.map(m => m.id).filter(id => saved.visible.includes(id)); if (v2.length) d.visible = v2; }
+  if (typeof saved.budget === 'number' && isFinite(saved.budget) && saved.budget >= 0) d.budget = saved.budget;
   if (saved.defaultMethod === 'auto' || (METHOD[saved.defaultMethod] && d.visible.includes(saved.defaultMethod))) d.defaultMethod = saved.defaultMethod;
   return d;
 }
@@ -1068,6 +1092,48 @@ function modeHTML(name){
 }
 
 /* ===================== Tela Compras ===================== */
+function renderBudget(tot){
+  const B = state.settings.budget;
+  if (!(B > 0)){
+    if (state.editingBudget) $('#summary').innerHTML = budgetEditHTML(true);
+    return;
+  }
+  const spent = tot.comprei.paid || 0, planned = tot.quero.paid || 0;
+  const left = B - spent, after = left - planned;
+  const pct = v => Math.max(0, Math.min(100, v / B * 100));
+  const wSp = pct(spent), wPl = Math.min(100 - wSp, pct(planned));
+  const n = c => c === 1 ? '1 compra' : c + ' compras';
+  $('#summary').innerHTML = '<section class="budget" aria-labelledby="bg-h">' +
+    '<div class="bg-top"><h2 id="bg-h">Orçamento da viagem</h2><button type="button" class="linkbtn" data-action="edit-budget">Alterar</button></div>' +
+    '<p class="bg-of" style="margin-top:6px">' + (left >= 0 ? 'Ainda tenho' : 'Passei do orçamento') + '</p>' +
+    '<div class="bg-left' + (left < 0 ? ' neg' : '') + '" id="bg-left">' + fmtBRL0(Math.abs(left)) + '</div>' +
+    '<p class="bg-of">de ' + fmtBRL0(B) + '</p>' +
+    '<div class="bg-bar" role="img" aria-label="Gasto ' + Math.round(wSp) + '% do orçamento, mais ' + Math.round(wPl) + '% planejado"><i class="sp" style="width:' + wSp.toFixed(2) + '%"></i><i class="pl" style="width:' + wPl.toFixed(2) + '%"></i></div>' +
+    '<div class="bg-rows">' +
+      '<div class="bg-row"><span class="dot" style="background:var(--ink)"></span><span class="bl">Já gastei<span class="sub">' + n(tot.comprei.n) + ', ' + fmtJPY(tot.comprei.y) + '</span></span><span class="val" id="bg-spent">' + fmtBRL0(spent) + '</span></div>' +
+      '<div class="bg-row"><span class="dot" style="background:var(--circ-on)"></span><span class="bl">Falta comprar<span class="sub">' + n(tot.quero.n) + ', ' + fmtJPY(tot.quero.y) + '</span></span><span class="val" id="bg-planned">' + fmtBRL0(planned) + '</span></div>' +
+    '</div>' +
+    (tot.quero.n ? '<p class="bg-after' + (after < 0 ? ' neg' : '') + '" id="bg-after">' + (after >= 0 ? 'Se comprar tudo da lista, ainda sobram ' + fmtBRL0(after) + '.' : 'Para comprar tudo da lista, faltam ' + fmtBRL0(-after) + ' no orçamento.') + '</p>' : '') +
+    (state.editingBudget ? budgetEditHTML(false) : '') +
+    '<p class="sum-note" style="margin-top:10px">Valores que saem da conta, pela forma de pagar de cada compra.</p>' +
+    '</section>';
+}
+function budgetEditHTML(alone){
+  const f = '<form class="bg-edit" id="budget-form"><label class="vh" for="bg-input">Orçamento em reais</label><div class="with-prefix"><span class="pre">R$</span>' +
+    '<input id="bg-input" class="inp num" inputmode="numeric" value="' + (state.settings.budget > 0 ? NF(0,0).format(state.settings.budget) : '') + '" placeholder="15.000" autocomplete="off"></div>' +
+    '<button type="submit" class="btn primary">Salvar</button></form>';
+  return alone ? '<section class="budget"><div class="bg-top"><h2>Orçamento da viagem</h2></div>' + f + '</section>' : f;
+}
+function saveBudget(raw){
+  const v = parseYen(raw);
+  state.settings.budget = v > 0 ? v : 0;
+  state.editingBudget = false;
+  saveSettings(true);
+  renderHome();
+  if (state.view === 'backup') renderBackup();
+  toast(v > 0 ? 'Orçamento: ' + fmtBRL0(v) : 'Orçamento removido');
+}
+
 function renderHome(){
   const tot = { quero:{ y:0, b:0, n:0 }, comprei:{ y:0, b:0, n:0 } };
   const results = new Map();
@@ -1076,13 +1142,15 @@ function renderHome(){
     results.set(p.id, R);
     const t = tot[p.status === 'comprei' ? 'comprei' : 'quero'];
     t.n++;
-    if (R.valid){ t.y += R.Y; t.b += R.chosen.real; }
+    if (R.valid){ t.y += R.Y; t.b += R.chosen.real; t.paid = (t.paid || 0) + R.chosen.paid; }
   });
+  renderBudget(tot);
   const col = (title, t) => '<div class="sum-col"><h2>' + title + '</h2>' +
     '<span class="sum-brl">' + fmtBRL0(t.b) + '</span>' +
     '<span class="sum-yen num">' + fmtJPY(t.y) + '</span>' +
     '<span class="sum-count">' + (t.n === 1 ? '1 compra' : t.n + ' compras') + '</span></div>';
-  $('#summary').innerHTML = '<div class="summary">' + col('Quero comprar', tot.quero) + col('Comprei', tot.comprei) +
+  if (state.settings.budget > 0) { /* resumo dentro do orçamento */ }
+  else $('#summary').innerHTML = '<div class="summary">' + col('Quero comprar', tot.quero) + col('Comprei', tot.comprei) +
     '<p class="sum-note">' + (state.settings.defaultMethod === 'auto' && !state.purchases.some(p => p.method && p.method !== 'default') ? 'Pela forma mais barata de cada compra' : 'Pela forma de pagar escolhida em cada compra') + ', em <span style="white-space:nowrap">custo real' + qBtn('custoReal') + '</span></p></div>';
 
   $('#mode-home').innerHTML = state.purchases.length ? modeHTML('mode-home') : '';
@@ -1632,6 +1700,7 @@ async function restoreDefaults(){
   state.settings.mode = old.mode;
   state.settings.defaultMethod = old.defaultMethod;
   state.settings.visible = old.visible;
+  state.settings.budget = old.budget;
   await saveSettings(true);
   renderTaxas();
   renderHome();
@@ -1646,6 +1715,8 @@ async function renderBackup(){
   const st = state.settings;
   const defRow = (val, label, m) => '<label class="circ-row"><input type="radio" class="circ" name="def-method" value="' + val + '" data-def-method' + (st.defaultMethod === val ? ' checked' : '') + '><span>' + label + '</span>' + (m ? rd(m, 'sm') : '') + '</label>';
   $('#backup-body').innerHTML =
+    '<div class="panel"><h2>Orçamento da viagem</h2><p>Aparece no início: quanto ainda tenho, quanto já gastei e quanto falta comprar. Deixe vazio para esconder.</p>' +
+      '<form class="bg-edit" id="budget-form2"><label class="vh" for="bg-input2">Orçamento em reais</label><div class="with-prefix"><span class="pre">R$</span><input id="bg-input2" class="inp num" inputmode="numeric" value="' + (st.budget > 0 ? NF(0,0).format(st.budget) : '') + '" placeholder="15.000" autocomplete="off"></div><button type="submit" class="btn primary">Salvar</button></form></div>' +
     '<div class="panel"><h2>Forma de pagar padrão</h2><p>Os cards e o resumo usam essa forma, mesmo que outra saia mais barata. Em cada compra dá para escolher outra.</p>' +
       '<div class="opt-list">' + defRow('auto', 'A mais barata (automático)', null) + st.visible.map(id => defRow(id, esc(METHOD[id].name), id)).join('') + '</div></div>' +
     '<div class="panel"><h2>Formas que aparecem</h2><p>Só as marcadas aparecem ao cadastrar uma compra e entram na comparação.</p>' +
@@ -1800,6 +1871,11 @@ document.addEventListener('click', e => {
       if (state.sheet && state.sheet.id) openDetails(state.sheet.id); else Sheet.close();
       break;
     case 'dup': duplicatePurchase(id); break;
+    case 'edit-budget': {
+      state.editingBudget = !state.editingBudget; renderHome();
+      const i = $('#bg-input'); if (i){ i.focus(); i.select(); }
+      break;
+    }
     case 'zoom-photo': {
       const ph = $('#d-photo');
       if (ph){ ph.hidden = !ph.hidden; a.setAttribute('aria-expanded', String(!ph.hidden)); a.setAttribute('aria-label', ph.hidden ? 'Ver foto maior' : 'Esconder foto maior'); }
@@ -1881,6 +1957,10 @@ document.addEventListener('input', e => {
     updatePriceHint();
     return;
   }
+  if (t.id === 'bg-input' || t.id === 'bg-input2'){
+    const y = parseYen(t.value); if (y > 0) t.value = NF(0,0).format(y);
+    return;
+  }
   if (t.id === 'f-title' && t.value.trim()){
     const et = $('#e-title'); if (et) et.hidden = true;
     t.removeAttribute('aria-invalid');
@@ -1901,6 +1981,8 @@ document.addEventListener('input', e => {
 
 document.addEventListener('submit', e => {
   if (e.target.id === 'pform'){ e.preventDefault(); submitForm(e.target); }
+  if (e.target.id === 'budget-form'){ e.preventDefault(); saveBudget($('#bg-input').value); }
+  if (e.target.id === 'budget-form2'){ e.preventDefault(); saveBudget($('#bg-input2').value); }
 });
 
 document.addEventListener('keydown', e => {
