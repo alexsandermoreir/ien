@@ -16,7 +16,7 @@
 :root{
   --bg:#EDF0F3; --surface:#FFFFFF; --surface-2:#F3F5F7; --sheet-bg:#F4F6F8; --seg-bg:#E1E6EB; --seg-on:#FFFFFF;
   --ink:#14202B; --ink-2:#465462; --ink-3:#66737F; --line:#DCE2E8; --line-strong:#C3CCD5;
-  --yellow:#FFC629; --yellow-ink:#14202B;
+  --yellow:#FFC629; --yellow-ink:#14202B; --circ-on:#F2A900; --circ-line:#B7BFC7;
   --green-ink:#126B3D; --green-bg:#E2F3E9;
   --warn-ink:#6A4800; --warn-bg:#FFF3D1;
   --danger:#C42B2B; --danger-bg:#FDE9E9;
@@ -32,7 +32,7 @@
     --ink:#EDF2F6; --ink-2:#B7C2CC; --ink-3:#93A0AC; --line:#2A3743; --line-strong:#3B4A58;
     --green-ink:#6FD69D; --green-bg:#173528;
     --warn-ink:#F2D58C; --warn-bg:#352C14;
-    --danger:#FF7A7A; --danger-bg:#3A1D1D;
+    --danger:#FF7A7A; --danger-bg:#3A1D1D; --circ-on:#F2B200; --circ-line:#5B6976;
     --wise:#33C3A3; --nu:#B77BF2; --nu-fill:#7A1FC4; --bar:#5E6D7B; --link:#82B5FF; --focus:#82B5FF;
   }
 }
@@ -85,6 +85,23 @@ a{color:var(--link)}
 .ph-empty svg{width:34px;height:34px;opacity:.7}
 .pc-flag{position:absolute;left:8px;top:8px;display:inline-flex;align-items:center;gap:4px;background:var(--ink);color:var(--bg);font-size:12px;font-weight:600;padding:3px 8px 3px 6px;border-radius:999px}
 .pc-flag svg{width:13px;height:13px}
+.pcard-wrap{position:relative;display:flex}
+.circ{-webkit-appearance:none;appearance:none;flex:none;width:24px;height:24px;margin:0;border-radius:50%;border:1.6px solid var(--circ-line);background:transparent center/14px 14px no-repeat;cursor:pointer;transition:background-color .15s,border-color .15s}
+.circ:checked{background-color:var(--circ-on);border-color:var(--circ-on);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='3.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E")}
+.circ:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.circ[type="radio"]:checked{background-image:none;box-shadow:inset 0 0 0 4px var(--surface)}
+.pc-check{position:absolute;right:4px;top:4px;z-index:2;display:grid;place-items:center;width:44px;height:44px;cursor:pointer}
+.pc-check .circ{width:26px;height:26px;border-color:rgba(255,255,255,.95);background-color:rgba(0,0,0,.18);box-shadow:0 1px 3px rgba(0,0,0,.25)}
+.pc-check .circ:checked{background-color:var(--circ-on);border-color:var(--circ-on)}
+.circ-row{display:flex;align-items:center;gap:12px;min-height:44px;font-size:16px;cursor:pointer}
+.bought-row{margin:10px 0 0}
+.opt-list{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:2px 14px}
+.opt-list .circ-row + .circ-row{border-top:1px solid var(--line)}
+.opt-list .circ-row{min-height:50px;font-size:15.5px;line-height:1.25}
+.opt-list .circ-row .rd{margin-left:auto}
+.badge.alt{background:var(--surface-2);color:var(--ink-2)}
+.pc-alt{display:block;font-size:12px;color:var(--green-ink);margin-top:6px;line-height:1.3}
+.answer-alt{margin:12px 0 0;padding:10px 12px;border-radius:12px;background:var(--green-bg);color:var(--green-ink);font-size:15px;line-height:1.4}
 .pc-body{display:flex;flex-direction:column;gap:1px;padding:10px 12px 12px;flex:1}
 .pc-title{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:15px;font-weight:600;line-height:1.25}
 .pc-yen{display:block;font-size:13px;color:var(--ink-2);margin-top:2px}
@@ -292,8 +309,8 @@ input[type="date"].inp::-webkit-date-and-time-value{text-align:left}
   </section>
 
   <section class="view" id="view-backup" aria-labelledby="h-backup" hidden>
-    <h1 class="title" id="h-backup">Backup</h1>
-    <p class="lede">Guarde uma cópia das compras, fotos e taxas. Serve para trocar de celular ou se o navegador apagar os dados.</p>
+    <h1 class="title" id="h-backup">Ajustes</h1>
+    <p class="lede">Escolha como pagar por padrão, quais formas aparecem e faça backup.</p>
     <div id="backup-body"></div>
   </section>
 </div>
@@ -304,7 +321,7 @@ input[type="date"].inp::-webkit-date-and-time-value{text-align:left}
   <div class="tabbar-inner">
     <button type="button" class="tab" data-action="tab" data-view="compras"><span class="tab-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 8h14l-1.2 11.2a2 2 0 0 1-2 1.8H8.2a2 2 0 0 1-2-1.8L5 8z"/><path d="M9 10V6.5a3 3 0 0 1 6 0V10"/></svg></span>Compras</button>
     <button type="button" class="tab" data-action="tab" data-view="taxas"><span class="tab-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2.2"/><circle cx="10" cy="17" r="2.2"/></svg></span>Taxas</button>
-    <button type="button" class="tab" data-action="tab" data-view="backup"><span class="tab-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="4" width="17" height="5" rx="1.5"/><path d="M5 9v9.5A1.5 1.5 0 0 0 6.5 20h11a1.5 1.5 0 0 0 1.5-1.5V9"/><path d="M10 13h4"/></svg></span>Backup</button>
+    <button type="button" class="tab" data-action="tab" data-view="backup"><span class="tab-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2.8v2.4M12 18.8v2.4M2.8 12h2.4M18.8 12h2.4M5.5 5.5l1.7 1.7M16.8 16.8l1.7 1.7M5.5 18.5l1.7-1.7M16.8 7.2l1.7-1.7"/><circle cx="12" cy="12" r="6.6"/></svg></span>Ajustes</button>
   </div>
 </nav>
 
@@ -739,6 +756,7 @@ function calcPurchase(p, s, mode, today, opts){
 
   const list = [];
   METHODS.forEach((m, i) => {
+    if (opts.visible && opts.visible.indexOf(m.id) < 0) return;
     let r;
     try { r = CALC[m.id](Y, S, mode, ctx); } catch (e) { r = null; }
     if (!r || !isFinite(r.paid) || !isFinite(r.real) || r.real <= 0) return;
@@ -775,7 +793,7 @@ function calcPurchase(p, s, mode, today, opts){
 }
 
 function storyFor(R, s){
-  const b = R.best;
+  const b = R.chosen || R.best;
   const parts = [METHOD[b.id].verb(s) + ', você gasta cerca de ' + fmtBRL0(b.paid) + '.'];
   if (b.paid - b.real >= 1){
     parts.push(b.id === 'H'
@@ -783,7 +801,11 @@ function storyFor(R, s){
       : 'Se deixar o dinheiro rendendo até o dia da troca, o custo real cai para cerca de ' + fmtBRL0(b.real) + '.');
   }
   if (b.id === 'E' && R.ctx.dHold > 0) parts.push('O dólar rende até o dia da compra, e isso já está na conta.');
-  if (R.second){
+  if (b !== R.best){
+    const d = b.real - R.best.real;
+    if (d < 1) parts.push('Empata com a mais barata (' + R.best.short + '): a diferença é de centavos.');
+    else parts.push('A forma mais barata (' + R.best.short + ') sairia cerca de ' + fmtBRL0(d) + ' a menos.');
+  } else if (R.second){
     const d = R.second.real - b.real;
     if (d < 1) parts.push('Empata com a forma ' + R.second.id + ' (' + R.second.short + '): a diferença é de centavos.');
     else parts.push('Sai cerca de ' + fmtBRL0(d) + ' mais barato que a segunda opção (' + R.second.short + ').');
@@ -794,7 +816,11 @@ function storyFor(R, s){
 function alertsFor(R, st){
   const a = [];
   if (!R.valid) return a;
-  if (R.best.id === 'H'){
+  const shown = R.chosen || R.best;
+  if (shown.id === 'H' && R.best.id !== 'H'){
+    a.push('No cartão, o câmbio só é definido no dia da compra.');
+    if (R.turn && R.turn.pct > 0) a.push('Se o dólar cair mais de ' + fmtPct(R.turn.pct, 1) + ' até a compra, o cartão passa a compensar.');
+  } else if (R.best.id === 'H'){
     a.push('No cartão, o câmbio só é definido no dia da compra.');
     if (R.dependsRefund) a.push('Essa opção depende do estorno do IOF. Sem ele, a melhor seria ' + R.turn.vs.short + '.');
     if (R.turn && R.turn.pct > 0.05) a.push('Se o dólar subir mais de ' + fmtPct(R.turn.pct, 1) + ' até a compra, o cartão deixa de compensar.');
@@ -802,7 +828,7 @@ function alertsFor(R, st){
   } else if (R.turn && R.turn.pct > 0){
     a.push('Se o dólar cair mais de ' + fmtPct(R.turn.pct, 1) + ' até a compra, o cartão passa a compensar.');
   }
-  if (R.best.id === 'F' && !st.informed.nuUsdJpyCost) a.push('A Conta Global pode cobrar para gastar o dólar em iene. Esse custo não foi informado e está como 0%.');
+  if (shown.id === 'F' && !st.informed.nuUsdJpyCost) a.push('A Conta Global pode cobrar para gastar o dólar em iene. Esse custo não foi informado e está como 0%.');
   const keys = st.mode === 'fair' ? ['mktUsdBrl','mktJpyPerUsd'] : ['wiseQUsdBrl','wiseQBrlJpy','nuQUsdBrl','cardRate','mcUsdPerJpy'];
   let oldest = null;
   keys.forEach(k => { const u = st.updated[k]; if (validISO(u) && (!oldest || u < oldest)) oldest = u; });
@@ -878,7 +904,7 @@ function defaultSettings(){
     else values[f.key] = f.def;
     if (RATE_KEYS.includes(f.key)) updated[f.key] = DEFAULTS_DATE;
   });
-  return { values, updated, informed: { nuUsdJpyCost:false }, mode:'fair' };
+  return { values, updated, informed: { nuUsdJpyCost:false }, mode:'fair', defaultMethod:'auto', visible: METHODS.map(m => m.id) };
 }
 
 function mergeSettings(saved){
@@ -896,6 +922,8 @@ function mergeSettings(saved){
   RATE_KEYS.forEach(k => { if (validISO(u[k])) d.updated[k] = u[k]; });
   if (saved.informed && typeof saved.informed.nuUsdJpyCost === 'boolean') d.informed.nuUsdJpyCost = saved.informed.nuUsdJpyCost;
   if (saved.mode === 'fair' || saved.mode === 'app') d.mode = saved.mode;
+  if (Array.isArray(saved.visible)){ const v2 = METHODS.map(m => m.id).filter(id => saved.visible.includes(id)); if (v2.length) d.visible = v2; }
+  if (saved.defaultMethod === 'auto' || (METHOD[saved.defaultMethod] && d.visible.includes(saved.defaultMethod))) d.defaultMethod = saved.defaultMethod;
   return d;
 }
 
@@ -909,7 +937,17 @@ function saveSettings(now){
 
 function calcFor(p){
   const st = state.settings;
-  return calcPurchase(p, st.values, st.mode, todayISO(), { nuInformed: st.informed.nuUsdJpyCost });
+  const R = calcPurchase(p, st.values, st.mode, todayISO(), { nuInformed: st.informed.nuUsdJpyCost, visible: st.visible });
+  if (!R.valid) return R;
+  const pref = (p.method && p.method !== 'default') ? p.method : st.defaultMethod;
+  R.pref = pref;
+  R.chosen = (pref !== 'auto' && R.list.find(r => r.id === pref)) || R.best;
+  R.chosenIsBest = R.chosen === R.best;
+  return R;
+}
+function methodPrefLabel(){
+  const d = state.settings.defaultMethod;
+  return d === 'auto' ? 'a mais barata' : METHOD[d].short;
 }
 
 /* ===================== Fotos ===================== */
@@ -1038,14 +1076,14 @@ function renderHome(){
     results.set(p.id, R);
     const t = tot[p.status === 'comprei' ? 'comprei' : 'quero'];
     t.n++;
-    if (R.valid){ t.y += R.Y; t.b += R.best.real; }
+    if (R.valid){ t.y += R.Y; t.b += R.chosen.real; }
   });
   const col = (title, t) => '<div class="sum-col"><h2>' + title + '</h2>' +
     '<span class="sum-brl">' + fmtBRL0(t.b) + '</span>' +
     '<span class="sum-yen num">' + fmtJPY(t.y) + '</span>' +
     '<span class="sum-count">' + (t.n === 1 ? '1 compra' : t.n + ' compras') + '</span></div>';
   $('#summary').innerHTML = '<div class="summary">' + col('Quero comprar', tot.quero) + col('Comprei', tot.comprei) +
-    '<p class="sum-note">Pela forma mais barata de cada compra, em <span style="white-space:nowrap">custo real' + qBtn('custoReal') + '</span></p></div>';
+    '<p class="sum-note">' + (state.settings.defaultMethod === 'auto' && !state.purchases.some(p => p.method && p.method !== 'default') ? 'Pela forma mais barata de cada compra' : 'Pela forma de pagar escolhida em cada compra') + ', em <span style="white-space:nowrap">custo real' + qBtn('custoReal') + '</span></p></div>';
 
   $('#mode-home').innerHTML = state.purchases.length ? modeHTML('mode-home') : '';
 
@@ -1072,20 +1110,24 @@ function renderHome(){
 function cardHTML(p, R){
   const url = state.photoURLs.get(p.id);
   const photo = url ? '<img src="' + url + '" alt="">' : '<span class="ph-empty">' + ICON.bag + '</span>';
-  const flag = p.status === 'comprei' ? '<span class="pc-flag">' + ICON.check + 'Comprei</span>' : '';
   let money;
   if (R && R.valid){
-    const b = R.best;
+    const b = R.chosen;
     money = '<span class="pc-brl">' + fmtBRL0(b.real) + '</span>' +
       (b.paid - b.real >= 1 ? '<span class="pc-cap">' + (b.id === 'H' ? 'na fatura: ' : 'você paga ') + fmtBRL0(b.paid) + '</span>' : '') +
-      '<span class="badge">' + rd(b, 'sm') + '<span>Melhor: ' + esc(b.short) + '</span></span>';
+      (R.chosenIsBest
+        ? '<span class="badge">' + rd(b, 'sm') + '<span>Melhor: ' + esc(b.short) + '</span></span>'
+        : '<span class="badge alt">' + rd(b, 'sm') + '<span>Pagar: ' + esc(b.short) + '</span></span>' +
+          (b.real - R.best.real >= 1 ? '<span class="pc-alt">Mais barata: ' + esc(R.best.short) + ', ' + fmtBRL0(b.real - R.best.real) + ' a menos</span>' : ''));
   } else {
     money = '<span class="pc-cap">Sem preço válido. Toque para editar.</span>';
   }
-  return '<button type="button" class="pcard" data-action="open" data-id="' + esc(p.id) + '">' +
-    '<span class="pc-photo">' + photo + flag + '</span>' +
+  const on = p.status === 'comprei';
+  return '<div class="pcard-wrap"><label class="pc-check"><input type="checkbox" class="circ" data-bought="' + esc(p.id) + '"' + (on ? ' checked' : '') + ' aria-label="Comprei: ' + esc(p.title) + '"></label>' +
+    '<button type="button" class="pcard" data-action="open" data-id="' + esc(p.id) + '">' +
+    '<span class="pc-photo">' + photo + '</span>' +
     '<span class="pc-body"><span class="pc-title">' + esc(p.title) + '</span>' +
-    '<span class="pc-yen num">' + fmtJPY(p.priceJpy) + (p.taxFree ? ' (tax-free)' : '') + '</span>' + money + '</span></button>';
+    '<span class="pc-yen num">' + fmtJPY(p.priceJpy) + (p.taxFree ? ' (tax-free)' : '') + '</span>' + money + '</span></button></div>';
 }
 
 /* ===================== Painel (sheet) ===================== */
@@ -1191,21 +1233,23 @@ function detailsHTML(p){
   h += '<div class="chips">' +
     (p.store ? '<span class="chip">' + esc(p.store) + '</span>' : '') +
     '<span class="chip">' + (p.status === 'comprei' ? 'Comprei' : 'Quero comprar') + '</span>' +
-    (p.taxFree ? '<span class="chip">Loja com tax-free</span>' : '<span class="chip">Sem tax-free</span>') + '</div>';
+    (p.taxFree ? '<span class="chip">Loja com tax-free</span>' : '<span class="chip">Sem tax-free</span>') + '</div>' +
+    '<label class="circ-row bought-row"><input type="checkbox" class="circ" data-bought="' + esc(p.id) + '"' + (p.status === 'comprei' ? ' checked' : '') + '>Comprei</label>';
 
   if (!R.valid){
     h += '<div class="answer"><p class="story">Falta um preço válido em ienes. Toque em Editar para corrigir.</p></div>';
     h += actionsHTML(p);
     return h;
   }
-  const b = R.best;
-  h += '<div class="answer" aria-labelledby="ans-k"><p class="answer-k" id="ans-k">Forma mais barata</p>' +
+  const b = R.chosen;
+  h += '<div class="answer" aria-labelledby="ans-k"><p class="answer-k" id="ans-k">' + (R.chosenIsBest ? (R.pref === 'auto' ? 'Forma mais barata' : 'Sua forma de pagar, e a mais barata') : 'Sua forma de pagar') + '</p>' +
     '<div class="answer-m">' + rd(b, 'lg') + '<span>' + esc(b.name) + '</span></div>' +
     '<div class="answer-v">' + fmtBRL0(b.real) + '</div>' +
     (b.paid - b.real >= 1
       ? '<div class="answer-c">Custo real' + qBtn('custoReal') + '</div><div class="answer-c">' + (b.id === 'H' ? 'Na fatura: ' : 'Sai da conta: ') + fmtBRL(b.paid) + '</div>'
       : '<div class="answer-c">Custo em reais: ' + fmtBRL(b.paid) + '</div>') +
     '<p class="story">' + esc(storyFor(R, st.values)) + '</p>' +
+    (R.chosenIsBest ? '' : '<p class="answer-alt">A mais barata seria ' + esc(R.best.name) + ': ' + fmtBRL0(R.best.real) + '.</p>') +
     alertsFor(R, st).map(t => '<div class="alert">' + ICON.info + '<span>' + esc(t) + '</span></div>').join('') +
     '</div>';
 
@@ -1216,8 +1260,9 @@ function detailsHTML(p){
     const w = r.extra <= 0.005 ? 0 : Math.max(2, r.extra / maxExtra * 100);
     return '<li><div class="rk-top">' + rd(r) + '<span class="rk-name">' + esc(r.name) + '</span><span class="rk-val">' + fmtBRL(r.real) + '</span></div>' +
       '<div class="rk-sub">' + (i === 0
-        ? '<span class="rk-best">Mais barata</span>'
+        ? '<span class="rk-best">Mais barata' + (r === R.chosen && R.pref !== 'auto' ? ', sua forma de pagar' : '') + '</span>'
         : '<span class="bar" aria-hidden="true"><i style="width:' + w.toFixed(1) + '%"></i></span><span class="rk-extra">+ ' + fmtBRL(r.extra) + ' (' + fmtPct(r.extraPct, 1) + ')</span>') + '</div>' +
+      (r === R.chosen && i > 0 ? '<div class="rk-tags"><span class="tag" style="background:var(--surface-2);color:var(--ink)">Sua forma de pagar</span></div>' : '') +
       (r.tags.length ? '<div class="rk-tags">' + r.tags.map(t => '<span class="tag">' + esc(t) + '</span>').join('') + '</div>' : '') +
       '</li>';
   }).join('') + '</ol>';
@@ -1274,13 +1319,23 @@ function formHTML(p){
       '<label><input type="radio" name="taxFree" value="sim"' + (v.taxFree ? ' checked' : '') + '><span>Sim</span></label>' +
       '<label><input type="radio" name="taxFree" value="nao"' + (!v.taxFree ? ' checked' : '') + '><span>Não</span></label></div>' +
       '<p class="hint">O Japão devolve a turistas o imposto de 10% que vem no preço. Com tax-free, a conta usa o preço sem esse imposto.</p></fieldset>' +
-    '<fieldset class="form-row"><legend>Status</legend><div class="seg">' +
-      '<label><input type="radio" name="status" value="quero"' + (v.status !== 'comprei' ? ' checked' : '') + '><span>Quero comprar</span></label>' +
-      '<label><input type="radio" name="status" value="comprei"' + (v.status === 'comprei' ? ' checked' : '') + '><span>Comprei</span></label></div></fieldset>' +
+    methodPickerHTML(v.method) +
+    '<div class="form-row"><label class="circ-row bought-row"><input type="checkbox" class="circ" name="bought"' + (v.status === 'comprei' ? ' checked' : '') + '>Comprei</label>' +
+      '<p class="hint">Deixe sem marcar enquanto ainda quer comprar.</p></div>' +
     '<div class="form-row"><label for="f-notes">Observações<span class="opt">(opcional)</span></label><textarea id="f-notes" class="inp" name="notes" maxlength="2000" placeholder="Ex.: cor azul, tamanho 42">' + esc(v.notes) + '</textarea></div>' +
     '<div class="form-actions"><button type="submit" class="btn primary block">Salvar compra</button>' +
       '<button type="button" class="btn block" data-action="cancel-form">Cancelar</button></div>' +
     '</form>';
+}
+
+function methodPickerHTML(cur){
+  const st = state.settings;
+  cur = (cur && (cur === 'default' || st.visible.includes(cur))) ? cur : 'default';
+  const row = (val, label, m) => '<label class="circ-row"><input type="radio" class="circ" name="method" value="' + val + '"' + (cur === val ? ' checked' : '') + '><span>' + label + '</span>' + (m ? rd(m, 'sm') : '') + '</label>';
+  return '<fieldset class="form-row"><legend>Forma de pagar</legend><div class="opt-list">' +
+    row('default', 'Padrão: ' + esc(methodPrefLabel()), st.defaultMethod === 'auto' ? null : st.defaultMethod) +
+    st.visible.map(id => row(id, esc(METHOD[id].name), id)).join('') +
+    '</div><p class="hint">Escolha as formas desta lista e a padrão em Ajustes.</p></fieldset>';
 }
 
 function updatePriceHint(){
@@ -1336,7 +1391,8 @@ async function submitForm(form){
     title, priceJpy: price,
     store: form.store.value.trim(),
     taxFree: form.taxFree.value === 'sim',
-    status: form.status.value === 'comprei' ? 'comprei' : 'quero',
+    status: form.bought.checked ? 'comprei' : 'quero',
+    method: (form.method && form.method.value) || 'default',
     notes: form.notes.value.trim(),
     updatedAt: now
   });
@@ -1354,6 +1410,39 @@ async function submitForm(form){
   renderHome();
   openDetails(p.id);
   toast(existing ? 'Compra atualizada' : 'Compra salva');
+}
+
+function afterPrefChange(){
+  saveSettings(true);
+  renderHome();
+  if (state.view === 'backup') renderBackup();
+  if (state.sheet && state.sheet.kind === 'details') openDetails(state.sheet.id, true);
+}
+function setDefaultMethod(v){
+  if (v !== 'auto' && !METHOD[v]) return;
+  state.settings.defaultMethod = v;
+  afterPrefChange();
+  toast(v === 'auto' ? 'Padrão: a mais barata' : 'Padrão: ' + METHOD[v].short);
+}
+function toggleVisible(id, on, el){
+  const st = state.settings;
+  if (!on && st.visible.length <= 1){ el.checked = true; toast('Deixe pelo menos uma forma marcada'); return; }
+  st.visible = METHODS.map(m => m.id).filter(x => x === id ? on : st.visible.includes(x));
+  if (!st.visible.includes(st.defaultMethod) && st.defaultMethod !== 'auto') st.defaultMethod = 'auto';
+  afterPrefChange();
+}
+
+async function setBought(id, on){
+  const p = state.purchases.find(x => x.id === id);
+  if (!p) return;
+  const prev = p.status;
+  p.status = on ? 'comprei' : 'quero';
+  p.updatedAt = new Date().toISOString();
+  try { await Store.put('purchases', p); }
+  catch (e) { p.status = prev; toast('Não deu para salvar.'); }
+  renderHome();
+  if (state.sheet && state.sheet.kind === 'details' && state.sheet.id === id) openDetails(id, true);
+  toast(p.status === 'comprei' ? 'Marcada como comprada' : 'Voltou para quero comprar');
 }
 
 async function duplicatePurchase(id){
@@ -1538,9 +1627,11 @@ function setMode(m){
 }
 
 async function restoreDefaults(){
-  const mode = state.settings.mode;
+  const old = state.settings;
   state.settings = defaultSettings();
-  state.settings.mode = mode;
+  state.settings.mode = old.mode;
+  state.settings.defaultMethod = old.defaultMethod;
+  state.settings.visible = old.visible;
   await saveSettings(true);
   renderTaxas();
   renderHome();
@@ -1552,7 +1643,14 @@ async function renderBackup(){
   let last = null;
   try { last = await Store.get('kv', 'lastBackup'); } catch (e) {}
   const nPhotos = state.purchases.filter(p => p.hasPhoto).length;
+  const st = state.settings;
+  const defRow = (val, label, m) => '<label class="circ-row"><input type="radio" class="circ" name="def-method" value="' + val + '" data-def-method' + (st.defaultMethod === val ? ' checked' : '') + '><span>' + label + '</span>' + (m ? rd(m, 'sm') : '') + '</label>';
   $('#backup-body').innerHTML =
+    '<div class="panel"><h2>Forma de pagar padrão</h2><p>Os cards e o resumo usam essa forma, mesmo que outra saia mais barata. Em cada compra dá para escolher outra.</p>' +
+      '<div class="opt-list">' + defRow('auto', 'A mais barata (automático)', null) + st.visible.map(id => defRow(id, esc(METHOD[id].name), id)).join('') + '</div></div>' +
+    '<div class="panel"><h2>Formas que aparecem</h2><p>Só as marcadas aparecem ao cadastrar uma compra e entram na comparação.</p>' +
+      '<div class="opt-list">' + METHODS.map(m => '<label class="circ-row"><input type="checkbox" class="circ" data-visible="' + m.id + '"' + (st.visible.includes(m.id) ? ' checked' : '') + '><span>' + esc(m.name) + '</span>' + rd(m, 'sm') + '</label>').join('') + '</div></div>' +
+    '<h2 class="sec-h" style="margin-top:30px">Backup</h2>' +
     '<div class="panel"><h2>Exportar backup</h2><p>Cria um arquivo com ' + state.purchases.length + (state.purchases.length === 1 ? ' compra' : ' compras') +
       (nPhotos ? ' (' + nPhotos + ' com foto)' : '') + ' e todas as taxas. ' + (last ? 'Último backup: ' + fmtDate(String(last).slice(0, 10)) + '.' : 'Você ainda não fez backup.') + '</p>' +
       '<button type="button" class="btn primary block" data-action="export">' + ICON.down + 'Exportar backup</button></div>' +
@@ -1630,6 +1728,7 @@ function sanitizePurchase(c){
     taxFree: !!c.taxFree,
     status: c.status === 'comprei' ? 'comprei' : 'quero',
     notes: typeof c.notes === 'string' ? c.notes.slice(0, 2000) : '',
+    method: (c.method === 'default' || METHOD[c.method]) ? c.method : 'default',
     createdAt: typeof c.createdAt === 'string' ? c.createdAt : now,
     updatedAt: typeof c.updatedAt === 'string' ? c.updatedAt : now,
     hasPhoto: false
@@ -1758,6 +1857,9 @@ document.addEventListener('change', e => {
   const t = e.target;
   if (t.matches('[data-mode-radio]')) return setMode(t.value);
   if (t.matches('[data-filter-radio]')){ state.filter = t.value; renderHome(); return; }
+  if (t.matches('[data-bought]')) return setBought(t.dataset.bought, t.checked);
+  if (t.matches('[data-def-method]')) return setDefaultMethod(t.value);
+  if (t.matches('[data-visible]')) return toggleVisible(t.dataset.visible, t.checked, t);
   if (t.id === 'photo-input') return onPhotoChosen(t.files && t.files[0]);
   if (t.id === 'import-input') return t.files && t.files[0] && readImportFile(t.files[0]);
   if (t.matches('[data-bool]')) return commitField(t.dataset.bool, t.value === '1', true);
